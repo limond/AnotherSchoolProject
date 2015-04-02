@@ -77,18 +77,24 @@ public class CardGames extends ActionBarActivity {
     }
     @Override
     public void onBackPressed() {
+        /*
+           Wird der Back-Button gedrückt wird eine Aktion basierend auf dem aktuellen Layout aufgerufen
+         */
         switch(currentLayout){
             case R.layout.hosts_list:
+                //Gehe zurück zum Hauptbildschirm
                 setContentView(R.layout.activity_card_games);
                 registerMainLayoutListeners();
                 break;
             default:
+                //Bringe die App in den Hintergrund (App schließt sich, ohne dass der Prozess sofort beendet wird)
                 moveTaskToBack(true);
                 break;
         }
     }
     @Override
     public void setContentView(final int id) {
+        //Wird das Layout verändert, wird das aktuelle Layout gespeichert um Entscheidungen aufgrund des Layouts treffen zu können
         super.setContentView(id);
         currentLayout = id;
     }
