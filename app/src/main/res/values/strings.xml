@@ -4,5 +4,6 @@
     <string name="app_name">AnotherSchoolProject</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="DiscoveryStart">Nach Geräten suchen</string>
+    <string name="DiscoveryRunning">Suche abbrechen...</string>
 </resources>
