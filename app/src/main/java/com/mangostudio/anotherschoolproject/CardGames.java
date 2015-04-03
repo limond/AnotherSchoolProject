@@ -1,6 +1,5 @@
 package com.mangostudio.anotherschoolproject;
 
-import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,28 +7,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class CardGames extends ActionBarActivity {
     public int currentLayout;
+    public NetworkHandler netHandler;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_games);
 
-        final TextView text = (TextView) findViewById(R.id.textView);
-        registerMainLayoutListeners();
+        //Toast.makeText(getApplicationContext(), "test Toast", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(getApplicationContext(), "test Toast", Toast.LENGTH_SHORT).show();
-
+        //Erstelle den Network-Thread
         NetworkThread thread = new NetworkThread();
         thread.start();
-        NetworkHandler netHandler = new NetworkHandler(thread.getLooper());
-
-        Message msg = netHandler.obtainMessage();
-        msg.obj = "Hello world";
-        netHandler.sendMessage(msg);
+        //Setze den Messege-Handler für den Netzwerkthread
+        netHandler = new NetworkHandler(thread.getLooper());
+        //Fragt, ob es einen Bluetooth-Adapter gibt
+        InterThreadCom.checkBluetooth(netHandler, this);
+        //Toast.makeText(this, "1", Toast.LENGTH_LONG);
     }
 
     public void registerMainLayoutListeners(){
@@ -52,6 +49,17 @@ public class CardGames extends ActionBarActivity {
             }
         };
         connect.setOnClickListener(connectListener);
+    }
+
+    public void registerHostListListeners(){
+        final HostListView list = (HostListView) findViewById(R.id.hostsListView);
+        InterThreadCom.getPairedDevices(netHandler, list);
+        list.setOnDiscoveryStatusChangeListener(new OnDiscoveryStatusChangeListener() {
+            @Override
+            public void onStatusChange(int status) {
+
+            }
+        });
     }
 
     @Override
@@ -84,7 +92,6 @@ public class CardGames extends ActionBarActivity {
             case R.layout.hosts_list:
                 //Gehe zurück zum Hauptbildschirm
                 setContentView(R.layout.activity_card_games);
-                registerMainLayoutListeners();
                 break;
             default:
                 //Bringe die App in den Hintergrund (App schließt sich, ohne dass der Prozess sofort beendet wird)
@@ -97,5 +104,13 @@ public class CardGames extends ActionBarActivity {
         //Wird das Layout verändert, wird das aktuelle Layout gespeichert um Entscheidungen aufgrund des Layouts treffen zu können
         super.setContentView(id);
         currentLayout = id;
+        switch(id){
+            case R.layout.activity_card_games:
+                registerMainLayoutListeners();
+                break;
+            case R.layout.hosts_list:
+                registerHostListListeners();
+                break;
+        }
     }
 }

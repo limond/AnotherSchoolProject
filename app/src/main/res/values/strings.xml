@@ -6,4 +6,5 @@
     <string name="action_settings">Settings</string>
     <string name="DiscoveryStart">Nach Geräten suchen</string>
     <string name="DiscoveryRunning">Suche abbrechen...</string>
+    <string name="NoBluetoothWarning">Kein Bluetooth-Adapter gefunden</string>
 </resources>
