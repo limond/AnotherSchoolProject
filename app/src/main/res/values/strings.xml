@@ -7,4 +7,5 @@
     <string name="DiscoveryStart">Nach Geräten suchen</string>
     <string name="DiscoveryRunning">Suche abbrechen...</string>
     <string name="NoBluetoothWarning">Kein Bluetooth-Adapter gefunden</string>
+    <string name="BluetoothNotActivated">Bluetooth muss aktiviert werden</string>
 </resources>

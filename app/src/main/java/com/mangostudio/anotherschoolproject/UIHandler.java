@@ -1,7 +1,9 @@
 package com.mangostudio.anotherschoolproject;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -23,7 +25,7 @@ public class UIHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
         switch(msg.what){
-            case InterThreadCom.BLUETOOTH_PRESENT_RESPONSE:
+            case InterThreadCom.BLUETOOTH_STATUS_RESPONSE:
                 handleBluetoothPresent(msg);
                 break;
             case InterThreadCom.BLUETOOTH_PAIRED_DEVICES_RESPONSE:
@@ -33,9 +35,16 @@ public class UIHandler extends Handler {
     }
 
     private void handleBluetoothPresent(Message msg){
-        if(!msg.getData().getBoolean("present")){
-            Activity ctx = (Activity) msg.obj;
-            Toast.makeText(ctx,R.string.NoBluetoothWarning,Toast.LENGTH_LONG).show();
+        Activity ctx = (Activity) msg.obj;
+        switch(msg.getData().getInt("status")){
+            case BluetoothManagement.BLUETOOTH_NOT_PRESENT:
+                Toast.makeText(ctx,R.string.NoBluetoothWarning,Toast.LENGTH_LONG).show();
+                //Beendet die App (genauer: die Aktuelle Activity), wenn kein BT-Adapter vorhanden ist
+                ctx.finish();
+            case BluetoothManagement.BLUETOOTH_NOT_ENABLED:
+                //Fragt beim System an, den BT-Adapter-Dialog anzuzeigen (onActivityResult empfängt das Resultat)
+                ctx.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), CardGames.INTENT_ENABLE_BLUETOOTH);
+                break;
         }
     }
 

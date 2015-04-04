@@ -1,5 +1,6 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,11 +8,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class CardGames extends ActionBarActivity {
     public int currentLayout;
     public NetworkHandler netHandler;
+
+    public static final int INTENT_ENABLE_BLUETOOTH = 1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +114,20 @@ public class CardGames extends ActionBarActivity {
                 break;
             case R.layout.hosts_list:
                 registerHostListListeners();
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case INTENT_ENABLE_BLUETOOTH:
+                if(resultCode != RESULT_OK){
+                    Toast.makeText(this, R.string.BluetoothNotActivated, Toast.LENGTH_LONG).show();
+                    //Beendet die App (genauer: die Aktuelle Activity), wenn der Nutzer BT nicht aktiviert
+                    finish();
+                }
                 break;
         }
     }

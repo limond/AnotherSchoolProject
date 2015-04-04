@@ -12,23 +12,23 @@ import java.util.Set;
  * Created by Leon on 03.04.2015.
  */
 public class InterThreadCom {
-    public final static int BLUETOOTH_PRESENT_REQUEST = 1;
-    public final static int BLUETOOTH_PRESENT_RESPONSE = 2;
+    public final static int BLUETOOTH_STATUS_REQUEST = 1;
+    public final static int BLUETOOTH_STATUS_RESPONSE = 2;
     public final static int BLUETOOTH_PAIRED_DEVICES_REQUEST = 3;
     public final static int BLUETOOTH_PAIRED_DEVICES_RESPONSE = 4;
 
     public static void checkBluetooth(Handler netHandler, Activity ctx){
         Message msg = netHandler.obtainMessage();
-        msg.what = BLUETOOTH_PRESENT_REQUEST;
+        msg.what = BLUETOOTH_STATUS_REQUEST;
         msg.obj = ctx;
         netHandler.sendMessage(msg);
     }
 
-    public static void bluetoothPresentStatus(Handler uiHandler, Activity ctx, Boolean present){
+    public static void bluetoothPresentStatus(Handler uiHandler, Activity ctx, int status){
         Message msg = uiHandler.obtainMessage();
-        msg.what = BLUETOOTH_PRESENT_RESPONSE;
+        msg.what = BLUETOOTH_STATUS_RESPONSE;
         Bundle data = new Bundle();
-        data.putBoolean("present",present);
+        data.putInt("status",status);
         msg.setData(data);
         msg.obj = ctx;
         uiHandler.sendMessage(msg);
