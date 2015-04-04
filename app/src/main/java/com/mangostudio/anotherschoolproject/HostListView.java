@@ -23,6 +23,9 @@ public class HostListView extends ListView {
     public OnDiscoveryStatusChangeListener statusListener;
     public BluetoothDevice[] devices;
 
+    public final static int DISCOVERY_START = 0;
+    public final static int DISCOVERY_STOP = 1;
+
     public HostListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, HostList);
@@ -39,17 +42,17 @@ public class HostListView extends ListView {
         this.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (view.hashCode() == footerView.hashCode()) {
+                if (view.equals(footerView)) {
                     //Footer wurde angeklickt (Suche nach Geräten beginnt oder endet)
                     if (!isSearching) {
                         isSearching = true;
                         status.setText(R.string.DiscoveryRunning);
-                        if (statusListener != null) statusListener.onStatusChange(1);
+                        if (statusListener != null) statusListener.onStatusChange(DISCOVERY_START);
                         progressSpinner.setVisibility(View.VISIBLE);
                     } else {
                         isSearching = false;
                         status.setText(R.string.DiscoveryStart);
-                        if (statusListener != null) statusListener.onStatusChange(0);
+                        if (statusListener != null) statusListener.onStatusChange(DISCOVERY_STOP);
                         progressSpinner.setVisibility(View.GONE);
                     }
                 }
