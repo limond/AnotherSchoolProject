@@ -25,16 +25,17 @@ public class UIHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
         switch(msg.what){
-            case InterThreadCom.BLUETOOTH_STATUS_RESPONSE:
+            /*case InterThreadCom.BLUETOOTH_STATUS_RESPONSE:
                 handleBluetoothPresent(msg);
                 break;
             case InterThreadCom.BLUETOOTH_PAIRED_DEVICES_RESPONSE:
                 handleBluetoothDevices(msg);
                 break;
+            */
         }
     }
 
-    private void handleBluetoothPresent(Message msg){
+    /*private void handleBluetoothPresent(Message msg){
         Activity ctx = (Activity) msg.obj;
         switch(msg.getData().getInt("status")){
             case BluetoothManagement.BLUETOOTH_NOT_PRESENT:
@@ -54,5 +55,5 @@ public class UIHandler extends Handler {
         HostListView list = (HostListView) msg.obj;
         list.setDevices(bluetoothDevices);
         Log.d("size",""+bluetoothDevices.length);
-    }
+    }*/
 }

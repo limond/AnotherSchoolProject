@@ -1,7 +1,10 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.widget.Toast;
 
 import java.util.Set;
 
@@ -25,7 +28,25 @@ public class BluetoothManagement {
         return BLUETOOTH_ENABLED;
     }
 
-    public Set<BluetoothDevice> getPairedDevices() {
-        return adapter.getBondedDevices();
+    public BluetoothDevice[] getPairedDevices() {
+        Set<BluetoothDevice> set = adapter.getBondedDevices();
+        BluetoothDevice[] devices = new BluetoothDevice[set.size()];
+        set.toArray(devices);
+        return devices;
+    }
+
+    public void checkBluetooth(Activity act) {
+        int status = getAdapterStatus();
+        switch(status){
+            case BluetoothManagement.BLUETOOTH_NOT_PRESENT:
+                Toast.makeText(act, R.string.NoBluetoothWarning, Toast.LENGTH_LONG).show();
+                //Beendet die App (genauer: die Aktuelle Activity), wenn kein BT-Adapter vorhanden ist
+                act.finish();
+                break;
+            case BluetoothManagement.BLUETOOTH_NOT_ENABLED:
+                //Fragt beim System an, den BT-Adapter-Dialog anzuzeigen (onActivityResult empfängt das Resultat)
+                act.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), CardGames.INTENT_ENABLE_BLUETOOTH);
+                break;
+        }
     }
 }

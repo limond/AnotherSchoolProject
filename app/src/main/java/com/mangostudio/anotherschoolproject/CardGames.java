@@ -1,5 +1,7 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 public class CardGames extends ActionBarActivity {
     public int currentLayout;
     public NetworkHandler netHandler;
+    public BluetoothManagement bluetooth;
 
     public static final int INTENT_ENABLE_BLUETOOTH = 1;
 
@@ -21,16 +24,15 @@ public class CardGames extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_games);
 
-        //Toast.makeText(getApplicationContext(), "test Toast", Toast.LENGTH_SHORT).show();
-
         //Erstelle den Network-Thread
         NetworkThread thread = new NetworkThread();
         thread.start();
         //Setze den Messege-Handler für den Netzwerkthread
         netHandler = new NetworkHandler(thread.getLooper());
-        //Fragt, ob es einen Bluetooth-Adapter gibt
-        InterThreadCom.checkBluetooth(netHandler, this);
-        //Toast.makeText(this, "1", Toast.LENGTH_LONG);
+
+        bluetooth = new BluetoothManagement();
+        //Fragt, ob es einen Bluetooth-Adapter gibt und ob dieser aktiviert ist und handelt, wenn nicht
+        bluetooth.checkBluetooth(this);
     }
 
     public void registerMainLayoutListeners(){
@@ -57,7 +59,7 @@ public class CardGames extends ActionBarActivity {
 
     public void registerHostListListeners(){
         final HostListView list = (HostListView) findViewById(R.id.hostsListView);
-        InterThreadCom.getPairedDevices(netHandler, list);
+        list.setDevices(bluetooth.getPairedDevices());
         list.setOnDiscoveryStatusChangeListener(new OnDiscoveryStatusChangeListener() {
             @Override
             public void onStatusChange(int status) {

@@ -21,7 +21,7 @@ public class NetworkHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
         switch(msg.what){
-            case InterThreadCom.BLUETOOTH_STATUS_REQUEST:
+            /*case InterThreadCom.BLUETOOTH_STATUS_REQUEST:
                 //Antwortet, ob es einen Bluetooth-Adapter gibt
                 InterThreadCom.bluetoothPresentStatus(uiHandler, (Activity) msg.obj, bluetooth.getAdapterStatus());
                 break;
@@ -29,6 +29,7 @@ public class NetworkHandler extends Handler {
                 //Antwortet, welche Geräte gepaired sind
                 InterThreadCom.sendBluetoothDevices(uiHandler, (HostListView) msg.obj, bluetooth.getPairedDevices());
                 break;
+               */
         }
     }
 }

@@ -12,7 +12,7 @@ import java.util.Set;
  * Created by Leon on 03.04.2015.
  */
 public class InterThreadCom {
-    public final static int BLUETOOTH_STATUS_REQUEST = 1;
+    /*public final static int BLUETOOTH_STATUS_REQUEST = 1;
     public final static int BLUETOOTH_STATUS_RESPONSE = 2;
     public final static int BLUETOOTH_PAIRED_DEVICES_REQUEST = 3;
     public final static int BLUETOOTH_PAIRED_DEVICES_RESPONSE = 4;
@@ -51,6 +51,6 @@ public class InterThreadCom {
         msg.setData(data);
         msg.obj = ctx;
         uiHandler.sendMessage(msg);
-    }
+    }*/
 
 }
