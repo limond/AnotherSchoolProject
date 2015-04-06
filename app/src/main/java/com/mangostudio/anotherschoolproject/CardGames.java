@@ -46,6 +46,7 @@ public class CardGames extends ActionBarActivity {
             }
         };
         host.setOnClickListener(hostListener);
+        //Wird auf "connect" geklickt, wechselt das layout zur Liste mit BT-Geräten
         View.OnClickListener connectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +59,9 @@ public class CardGames extends ActionBarActivity {
 
     public void registerHostListListeners(){
         final HostListView list = (HostListView) findViewById(R.id.hostsListView);
+        //Bereits bekannte Geräte werden der UI-Komponente mitgeteilt
         list.setDevices(bluetooth.getPairedDevices());
+        //Klickt der Nutzer auf den Listenfuß, wird eine Suche nach neuen Geräten gestartet bzw. beendet
         list.setOnDiscoveryStatusChangeRequestListener(new OnDiscoveryStatusChangeRequestListener() {
             @Override
             public void onStatusChange(int status) {
@@ -72,12 +75,14 @@ public class CardGames extends ActionBarActivity {
                 }
             }
         });
+        //Werden neue Geräte gefunden, werden diese der UI-Komponente HostListView mitgeteilt
         bluetooth.setOnNewDeviceListener(new OnNewDeviceListener() {
             @Override
             public void onNewDevice(BluetoothDevice device) {
                 list.addDevice(device);
             }
         });
+        //Wenn die BT-Suche durch das System abgebrochen wird, wird das Aussehen des Listenfußes auf "es wird nicht gesucht" gesetzt
         bluetooth.setOnDicoveryFinishedBySystemListener(new OnDiscoveryFinishedBySystemListener() {
             @Override
             public void onFinished() {
@@ -86,6 +91,10 @@ public class CardGames extends ActionBarActivity {
         });
     }
 
+    /*
+        Die folgenden zwei Funktionen sind automatisch generiert und behandeln das Menü, das mit der Menü-Taste aufgerufen wird
+        Wird dieses Menü nicht gebracht, kann man die Funktionen in der Zukunft löschen
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -128,6 +137,7 @@ public class CardGames extends ActionBarActivity {
         //Wird das Layout verändert, wird das aktuelle Layout gespeichert um Entscheidungen aufgrund des Layouts treffen zu können
         super.setContentView(id);
         currentLayout = id;
+        //Je nachdem, zu welchem Layout gewechselt wird, werden entsprechende Listener registriert und Funktionen aufgerufen
         switch(id){
             case R.layout.activity_card_games:
                 registerMainLayoutListeners();
@@ -139,10 +149,12 @@ public class CardGames extends ActionBarActivity {
     }
 
     @Override
+    //Von der App (eigentlich der Activity) gestartete Apps (eigentlich Activities) berichten ihr Ergebnis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
             case INTENT_ENABLE_BLUETOOTH:
+                //Wenn nach der BT-Aktivierung durch den Benutzer gefragt wurde, diese aber abgelehnt wurde, wird die App mit einer Nachricht beendet
                 if(resultCode != RESULT_OK){
                     Toast.makeText(this, R.string.BluetoothNotActivated, Toast.LENGTH_LONG).show();
                     //Beendet die App (genauer: die Aktuelle Activity), wenn der Nutzer BT nicht aktiviert
@@ -155,6 +167,7 @@ public class CardGames extends ActionBarActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
+        //Bevor die App durch das System gänzlich geschlossen wird, wird die Bluetooth-Suche abgebrochen
         if(bluetooth.isDiscovering()) bluetooth.cancelDiscovery(getApplicationContext());
     }
 }

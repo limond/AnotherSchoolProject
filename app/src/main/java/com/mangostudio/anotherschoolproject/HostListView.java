@@ -62,7 +62,7 @@ public class HostListView extends ListView {
             }
         });
     }
-
+    //Ändert das Aussehen des letzten Eintrags der Liste (z.B drehender Kreis während der Suche)
     public void setSearchingAppereance(int statusCode){
         if(statusCode == DISCOVERY_START){
             isSearching = true;
@@ -80,25 +80,29 @@ public class HostListView extends ListView {
         this.statusListener = statusListener;
     }
 
+    //Setzt die Liste der Geräte
     public void setDevices(Set<BluetoothDevice> devices){
         this.devices.clear();
         this.devices.addAll(devices);
         updateListView();
     }
-
+    //Fügt ein Gerät zur Liste hinzu (,wenn es noch nicht vorhanden ist)
     public void addDevice(BluetoothDevice device){
         this.devices.add(device);
         updateListView();
     }
-
+    //Füllt die UI-Komponente mit den neuen Einträgen
     private void updateListView(){
         HostList.clear();
         for (BluetoothDevice device : devices.toArray(new BluetoothDevice[devices.size()])) {
             String name = device.getName();
-            if(name == null) name =device.getAddress();
+            //Wenn Android noch nicht den Namen vom Gerät erfahren hat, wird stattdessen die Hardware-Adresse benutzt
+            if(name == null) name = device.getAddress();
+            //Namenszusatz "[paired]", wenn das Gerät bereits bekannt ist
             if(device.getBondState() == BluetoothDevice.BOND_BONDED) name += " [paired]";
             HostList.add(name);
         }
+        //Leitet das eigentliche Update der UI-Komponente ein
         arrAdapter.notifyDataSetChanged();
     }
 }

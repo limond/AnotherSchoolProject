@@ -30,16 +30,19 @@ public class BluetoothManagement {
         adapter = BluetoothAdapter.getDefaultAdapter();
     }
 
+    //Gibt an, ob Bluetooth nicht vorhanden, ausgeschaltet oder eingeschaltet ist
     public int getAdapterStatus() {
         if(adapter == null) return BLUETOOTH_NOT_PRESENT;
         if(!adapter.isEnabled()) return BLUETOOTH_NOT_ENABLED;
         return BLUETOOTH_ENABLED;
     }
 
+    //Gibt eine Liste (eigentlich ein Set, also eine ungeordnete Liste mit einzigartigen Elementen) mit Geräten zurück, die bereits verbunden worden sind
     public Set<BluetoothDevice> getPairedDevices() {
         return adapter.getBondedDevices();
     }
 
+    //Behandelt Komplikationen mit dem BT-Adapter
     public void checkBluetooth(Activity act) {
         int status = getAdapterStatus();
         switch(status){
@@ -55,12 +58,14 @@ public class BluetoothManagement {
         }
     }
 
+    //Schaltet die Geräte-Suche an
     public void discoverNewDevices(Context ctx){
         /*
             Die Funktion ist größtenteils aus der Bluetooth-Guide übernommen,
             da das so ziemlich die einzige Lösung für die Promblemstellung ist
             siehe http://developer.android.com/guide/topics/connectivity/bluetooth.html
          */
+        //Erstellt einen Empfänger der vom System benachrichtigt wird, sobald die Suche beendet oder ein neues Gerät gefunden wurde
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -69,11 +74,13 @@ public class BluetoothManagement {
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     //Bekomme das neue Gerät aus dem Intent
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    //Triggert den Listener für neue Geräte
                     if(newDeviceListener != null) newDeviceListener.onNewDevice(device);
                 }
                 else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                    //Discovery wurde vom System beendet
+                    //Discovery wurde vom System beendet (Triggert den Listener für das Beenden der Suche durch das System)
                     if(discoveryFinishedListener != null) discoveryFinishedListener.onFinished();
+                    isDiscovering = false;
                 }
             }
         };
@@ -82,6 +89,7 @@ public class BluetoothManagement {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         isDiscovering = true;
         ctx.registerReceiver(receiver, filter);
+        //Startet die eigentliche Suche
         adapter.startDiscovery();
     }
 
@@ -93,10 +101,12 @@ public class BluetoothManagement {
         newDeviceListener = listener;
     }
 
+    //Offensichtlich: Gibt an, ob gerade nach Geräten gesucht wird
     public Boolean isDiscovering(){
         return this.isDiscovering;
     }
 
+    //Beendet die Geräte-Suche vor ihrer Beendung durch das System
     public void cancelDiscovery(Context ctx){
         adapter.cancelDiscovery();
         ctx.unregisterReceiver(receiver);
