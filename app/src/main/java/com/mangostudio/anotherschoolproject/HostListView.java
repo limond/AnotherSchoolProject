@@ -12,32 +12,39 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Leon on 02.04.2015.
  */
 public class HostListView extends ListView {
-    public ArrayList<String> HostList = new ArrayList<String>();
-    public ArrayAdapter<String> adapter;
-    public Boolean isSearching = false;
-    public OnDiscoveryStatusChangeListener statusListener;
-    public BluetoothDevice[] devices;
-
     public final static int DISCOVERY_START = 0;
     public final static int DISCOVERY_STOP = 1;
 
+    public ArrayList<String> HostList = new ArrayList<>();
+    public ArrayAdapter<String> arrAdapter;
+    public Boolean isSearching = false;
+    public OnDiscoveryStatusChangeRequestListener statusListener;
+    public HashSet<BluetoothDevice> devices;
+
+    private final TextView status;
+    private final ProgressBar progressSpinner;
+
     public HostListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, HostList);
-        this.setAdapter(adapter);
+        devices = new HashSet<>();
+        arrAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, HostList);
+        this.setAdapter(arrAdapter);
         /*
             Die folgenden 2 Zeilen stammen aus http://stackoverflow.com/questions/4265228/how-to-add-a-footer-in-listview
             Sie fügen an die Liste einen Footer an (Eintrag der die Suche nach neuen Geräten erlaubt)
         */
         final View footerView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.hosts_list_footer, null, false);
         this.addFooterView(footerView);
-        final TextView status = (TextView) footerView.findViewById(R.id.discoveryStatus);
-        final ProgressBar progressSpinner = (ProgressBar) footerView.findViewById(R.id.discoveryProgressBar);
+
+        status = (TextView) footerView.findViewById(R.id.discoveryStatus);
+        progressSpinner = (ProgressBar) footerView.findViewById(R.id.discoveryProgressBar);
 
         this.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -45,31 +52,53 @@ public class HostListView extends ListView {
                 if (view.equals(footerView)) {
                     //Footer wurde angeklickt (Suche nach Geräten beginnt oder endet)
                     if (!isSearching) {
-                        isSearching = true;
-                        status.setText(R.string.DiscoveryRunning);
                         if (statusListener != null) statusListener.onStatusChange(DISCOVERY_START);
-                        progressSpinner.setVisibility(View.VISIBLE);
+                        setSearchingAppereance(DISCOVERY_START);
                     } else {
-                        isSearching = false;
-                        status.setText(R.string.DiscoveryStart);
                         if (statusListener != null) statusListener.onStatusChange(DISCOVERY_STOP);
-                        progressSpinner.setVisibility(View.GONE);
+                        setSearchingAppereance(DISCOVERY_STOP);
                     }
                 }
             }
         });
     }
 
-    public void setOnDiscoveryStatusChangeListener(OnDiscoveryStatusChangeListener statusListener){
+    public void setSearchingAppereance(int statusCode){
+        if(statusCode == DISCOVERY_START){
+            isSearching = true;
+            status.setText(R.string.DiscoveryRunning);
+            progressSpinner.setVisibility(View.VISIBLE);
+        }
+        else if (statusCode == DISCOVERY_STOP){
+            isSearching = false;
+            status.setText(R.string.DiscoveryStart);
+            progressSpinner.setVisibility(View.GONE);
+        }
+    }
+
+    public void setOnDiscoveryStatusChangeRequestListener(OnDiscoveryStatusChangeRequestListener statusListener){
         this.statusListener = statusListener;
     }
 
-    public void setDevices(BluetoothDevice[] devices){
-        this.devices = devices;
+    public void setDevices(Set<BluetoothDevice> devices){
+        this.devices.clear();
+        this.devices.addAll(devices);
+        updateListView();
+    }
+
+    public void addDevice(BluetoothDevice device){
+        this.devices.add(device);
+        updateListView();
+    }
+
+    private void updateListView(){
         HostList.clear();
-        for (BluetoothDevice device : devices) {
-            HostList.add(device.getName() + ((device.getBondState() == BluetoothDevice.BOND_BONDED) ? " (paired)" : ""));
+        for (BluetoothDevice device : devices.toArray(new BluetoothDevice[devices.size()])) {
+            String name = device.getName();
+            if(name == null) name =device.getAddress();
+            if(device.getBondState() == BluetoothDevice.BOND_BONDED) name += " [paired]";
+            HostList.add(name);
         }
-        adapter.notifyDataSetChanged();
+        arrAdapter.notifyDataSetChanged();
     }
 }

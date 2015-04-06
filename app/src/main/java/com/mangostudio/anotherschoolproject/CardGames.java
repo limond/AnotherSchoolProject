@@ -1,6 +1,5 @@
 package com.mangostudio.anotherschoolproject;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -60,10 +59,29 @@ public class CardGames extends ActionBarActivity {
     public void registerHostListListeners(){
         final HostListView list = (HostListView) findViewById(R.id.hostsListView);
         list.setDevices(bluetooth.getPairedDevices());
-        list.setOnDiscoveryStatusChangeListener(new OnDiscoveryStatusChangeListener() {
+        list.setOnDiscoveryStatusChangeRequestListener(new OnDiscoveryStatusChangeRequestListener() {
             @Override
             public void onStatusChange(int status) {
-
+                switch (status) {
+                    case HostListView.DISCOVERY_START:
+                        bluetooth.discoverNewDevices(getApplicationContext());
+                        break;
+                    case HostListView.DISCOVERY_STOP:
+                        bluetooth.cancelDiscovery(getApplicationContext());
+                        break;
+                }
+            }
+        });
+        bluetooth.setOnNewDeviceListener(new OnNewDeviceListener() {
+            @Override
+            public void onNewDevice(BluetoothDevice device) {
+                list.addDevice(device);
+            }
+        });
+        bluetooth.setOnDicoveryFinishedBySystemListener(new OnDiscoveryFinishedBySystemListener() {
+            @Override
+            public void onFinished() {
+                list.setSearchingAppereance(HostListView.DISCOVERY_STOP);
             }
         });
     }
@@ -132,5 +150,11 @@ public class CardGames extends ActionBarActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(bluetooth.isDiscovering()) bluetooth.cancelDiscovery(getApplicationContext());
     }
 }

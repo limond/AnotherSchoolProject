@@ -3,7 +3,10 @@ package com.mangostudio.anotherschoolproject;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.Toast;
 
 import java.util.Set;
@@ -18,6 +21,11 @@ public class BluetoothManagement {
     public static final int BLUETOOTH_ENABLED = 2;
 
     public BluetoothAdapter adapter;
+    private Boolean isDiscovering = false;
+    private BroadcastReceiver receiver;
+    private OnNewDeviceListener newDeviceListener;
+    private OnDiscoveryFinishedBySystemListener discoveryFinishedListener;
+
     public BluetoothManagement(){
         adapter = BluetoothAdapter.getDefaultAdapter();
     }
@@ -28,25 +36,70 @@ public class BluetoothManagement {
         return BLUETOOTH_ENABLED;
     }
 
-    public BluetoothDevice[] getPairedDevices() {
-        Set<BluetoothDevice> set = adapter.getBondedDevices();
-        BluetoothDevice[] devices = new BluetoothDevice[set.size()];
-        set.toArray(devices);
-        return devices;
+    public Set<BluetoothDevice> getPairedDevices() {
+        return adapter.getBondedDevices();
     }
 
     public void checkBluetooth(Activity act) {
         int status = getAdapterStatus();
         switch(status){
-            case BluetoothManagement.BLUETOOTH_NOT_PRESENT:
+            case BLUETOOTH_NOT_PRESENT:
                 Toast.makeText(act, R.string.NoBluetoothWarning, Toast.LENGTH_LONG).show();
                 //Beendet die App (genauer: die Aktuelle Activity), wenn kein BT-Adapter vorhanden ist
                 act.finish();
                 break;
-            case BluetoothManagement.BLUETOOTH_NOT_ENABLED:
+            case BLUETOOTH_NOT_ENABLED:
                 //Fragt beim System an, den BT-Adapter-Dialog anzuzeigen (onActivityResult empfängt das Resultat)
                 act.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), CardGames.INTENT_ENABLE_BLUETOOTH);
                 break;
         }
+    }
+
+    public void discoverNewDevices(Context ctx){
+        /*
+            Die Funktion ist größtenteils aus der Bluetooth-Guide übernommen,
+            da das so ziemlich die einzige Lösung für die Promblemstellung ist
+            siehe http://developer.android.com/guide/topics/connectivity/bluetooth.html
+         */
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                // Wenn ein neues Gerät gefunden wird
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    //Bekomme das neue Gerät aus dem Intent
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    if(newDeviceListener != null) newDeviceListener.onNewDevice(device);
+                }
+                else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
+                    //Discovery wurde vom System beendet
+                    if(discoveryFinishedListener != null) discoveryFinishedListener.onFinished();
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        isDiscovering = true;
+        ctx.registerReceiver(receiver, filter);
+        adapter.startDiscovery();
+    }
+
+    public void setOnDicoveryFinishedBySystemListener(OnDiscoveryFinishedBySystemListener listener){
+        discoveryFinishedListener = listener;
+    }
+
+    public void setOnNewDeviceListener(OnNewDeviceListener listener){
+        newDeviceListener = listener;
+    }
+
+    public Boolean isDiscovering(){
+        return this.isDiscovering;
+    }
+
+    public void cancelDiscovery(Context ctx){
+        adapter.cancelDiscovery();
+        ctx.unregisterReceiver(receiver);
+        isDiscovering = false;
     }
 }
