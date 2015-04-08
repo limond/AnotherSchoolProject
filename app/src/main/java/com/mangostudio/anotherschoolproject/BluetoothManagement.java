@@ -55,7 +55,7 @@ public class BluetoothManagement {
                 break;
             case BLUETOOTH_NOT_ENABLED:
                 //Fragt beim System an, den BT-Adapter-Dialog anzuzeigen (onActivityResult empfängt das Resultat)
-                act.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), CardGames.INTENT_ENABLE_BLUETOOTH);
+                act.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), CardGamesActivity.INTENT_ENABLE_BLUETOOTH);
                 break;
         }
     }
@@ -113,5 +113,10 @@ public class BluetoothManagement {
         adapter.cancelDiscovery();
         ctx.unregisterReceiver(receiver);
         isDiscovering = false;
+    }
+
+    //Name des eigenen Adapters
+    public String getName(){
+        return adapter.getName();
     }
 }

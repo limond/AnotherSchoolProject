@@ -16,13 +16,13 @@ public class InterThreadCom {
     public final static int BLUETOOTH_CONNECTION_START_REQUEST = 1;
     public final static int BLUETOOTH_CONNECTION_START_RESPONSE = 2;
 
-    //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
+    //Nachricht an den NetThread, dass eine Verbindung zu einem GerÃ¤t aufgebaut werden soll
     public static void connectToDevice(Handler netHandler,Context context, BluetoothDevice selectedDevice) {
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_REQUEST;
         msg.obj = context;
         Bundle data = new Bundle();
-        //Das Objekt Bluetooth-Gerät wird für den Transport in den anderen Thread "flach gemacht" und kommt in Bündel, das an die Nachricht angefügt wird
+        //Das Objekt Bluetooth-GerÃ¤t wird fÃ¼r den Transport in den anderen Thread "flach gemacht" und kommt in BÃ¼ndel, das an die Nachricht angefÃ¼gt wird
         data.putParcelable("device",selectedDevice);
         msg.setData(data);
         netHandler.sendMessage(msg);
@@ -32,7 +32,7 @@ public class InterThreadCom {
         Message msg = uiHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_RESPONSE;
         msg.obj = context;
-        // Hier könnte man auch einfach "msg.arg1" benutzen. Für spätere Erweiterbarkeit wird dennoch ein Bundle benutzt
+        // Hier kÃ¶nnte man auch einfach "msg.arg1" benutzen. FÃ¼r spÃ¤tere Erweiterbarkeit wird dennoch ein Bundle benutzt
         Bundle data = new Bundle();
         data.putInt("status",connectionStatus);
         msg.setData(data);
