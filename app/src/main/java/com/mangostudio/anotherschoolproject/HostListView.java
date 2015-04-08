@@ -3,6 +3,7 @@ package com.mangostudio.anotherschoolproject;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -26,14 +29,15 @@ public class HostListView extends ListView {
     public ArrayAdapter<String> arrAdapter;
     public Boolean isSearching = false;
     public OnDiscoveryStatusChangeRequestListener statusListener;
-    public HashSet<BluetoothDevice> devices;
+    public LinkedHashSet<BluetoothDevice> devices;
 
     private final TextView status;
     private final ProgressBar progressSpinner;
+    private OnDeviceSelectionListener selectListener;
 
     public HostListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        devices = new HashSet<>();
+        devices = new LinkedHashSet<>();
         arrAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, HostList);
         this.setAdapter(arrAdapter);
         /*
@@ -48,7 +52,7 @@ public class HostListView extends ListView {
 
         this.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int count, long l) {
                 if (view.equals(footerView)) {
                     //Footer wurde angeklickt (Suche nach Geräten beginnt oder endet)
                     if (!isSearching) {
@@ -58,6 +62,23 @@ public class HostListView extends ListView {
                         if (statusListener != null) statusListener.onStatusChange(DISCOVERY_STOP);
                         setSearchingAppereance(DISCOVERY_STOP);
                     }
+                }
+                else{
+                    if(isSearching) {
+                        if (statusListener != null) statusListener.onStatusChange(DISCOVERY_STOP);
+                        setSearchingAppereance(DISCOVERY_STOP);
+                    }
+                    //ein Gerät wurde angeklickt
+                    /*
+                        Im folgenden wird über das LinkedHashSet "devices" iteriert, um das ausgewählte zu finden
+                        Entweder hier oder beim Hinzufügen eines Sets zu einer ArrayList hätte sowieso iteriert werden müssen...
+                     */
+                    Iterator<BluetoothDevice> it = devices.iterator();
+                    BluetoothDevice selectedDevice = it.next();
+                    for(int i = 0; i<count; i++){
+                        selectedDevice = it.next();
+                    }
+                    if(selectListener != null) selectListener.onSelect(selectedDevice);
                 }
             }
         });
@@ -78,6 +99,10 @@ public class HostListView extends ListView {
 
     public void setOnDiscoveryStatusChangeRequestListener(OnDiscoveryStatusChangeRequestListener statusListener){
         this.statusListener = statusListener;
+    }
+
+    public void setOnDeviceSelectionListener(OnDeviceSelectionListener selectListener){
+        this.selectListener = selectListener;
     }
 
     //Setzt die Liste der Geräte

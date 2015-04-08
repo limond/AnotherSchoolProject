@@ -1,9 +1,14 @@
 package com.mangostudio.anotherschoolproject;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
+import java.io.IOException;
 
 /**
  * Created by limond on 06.03.15.
@@ -21,15 +26,16 @@ public class NetworkHandler extends Handler {
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
         switch(msg.what){
-            /*case InterThreadCom.BLUETOOTH_STATUS_REQUEST:
-                //Antwortet, ob es einen Bluetooth-Adapter gibt
-                InterThreadCom.bluetoothPresentStatus(uiHandler, (Activity) msg.obj, bluetooth.getAdapterStatus());
+            case InterThreadCom.BLUETOOTH_CONNECTION_START_REQUEST:
+                Bundle data = msg.getData();
+                BluetoothDevice device = data.getParcelable("device");
+                try {
+                    new BluetoothConnection(device);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    InterThreadCom.updateConnectionStatus(uiHandler, (Context) msg.obj,BluetoothConnection.CONNECTION_FAILED);
+                }
                 break;
-            case InterThreadCom.BLUETOOTH_PAIRED_DEVICES_REQUEST:
-                //Antwortet, welche Geräte gepaired sind
-                InterThreadCom.sendBluetoothDevices(uiHandler, (HostListView) msg.obj, bluetooth.getPairedDevices());
-                break;
-               */
         }
     }
 }

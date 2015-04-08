@@ -75,6 +75,18 @@ public class CardGames extends ActionBarActivity {
                 }
             }
         });
+        list.setOnDeviceSelectionListener(new OnDeviceSelectionListener() {
+            @Override
+            public void onSelect(BluetoothDevice selectedDevice) {
+                /*
+                    Ein Gerät wurde ausgewählt und ein Verbindungsversuch muss unternommen werden.
+                    Das blockiert den ausführenden Thread für eine lange Zeit
+                    (das System kann den Pairing-Dialog dazwischenschieben, das den Thread noch länger blockiert)
+                    Damit das System keinen  "application not responding" Dialog anzeigt, wird der Network-Thread benutzt
+                 */
+                InterThreadCom.connectToDevice(netHandler,getApplicationContext(), selectedDevice);
+            }
+        });
         //Werden neue Geräte gefunden, werden diese der UI-Komponente HostListView mitgeteilt
         bluetooth.setOnNewDeviceListener(new OnNewDeviceListener() {
             @Override

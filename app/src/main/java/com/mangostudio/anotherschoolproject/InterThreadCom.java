@@ -2,6 +2,7 @@ package com.mangostudio.anotherschoolproject;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,45 +13,29 @@ import java.util.Set;
  * Created by Leon on 03.04.2015.
  */
 public class InterThreadCom {
-    /*public final static int BLUETOOTH_STATUS_REQUEST = 1;
-    public final static int BLUETOOTH_STATUS_RESPONSE = 2;
-    public final static int BLUETOOTH_PAIRED_DEVICES_REQUEST = 3;
-    public final static int BLUETOOTH_PAIRED_DEVICES_RESPONSE = 4;
+    public final static int BLUETOOTH_CONNECTION_START_REQUEST = 1;
+    public final static int BLUETOOTH_CONNECTION_START_RESPONSE = 2;
 
-    public static void checkBluetooth(Handler netHandler, Activity ctx){
+    //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
+    public static void connectToDevice(Handler netHandler,Context context, BluetoothDevice selectedDevice) {
         Message msg = netHandler.obtainMessage();
-        msg.what = BLUETOOTH_STATUS_REQUEST;
-        msg.obj = ctx;
+        msg.what = BLUETOOTH_CONNECTION_START_REQUEST;
+        msg.obj = context;
+        Bundle data = new Bundle();
+        //Das Objekt Bluetooth-Gerät wird für den Transport in den anderen Thread "flach gemacht" und kommt in Bündel, das an die Nachricht angefügt wird
+        data.putParcelable("device",selectedDevice);
+        msg.setData(data);
         netHandler.sendMessage(msg);
     }
 
-    public static void bluetoothPresentStatus(Handler uiHandler, Activity ctx, int status){
+    public static void updateConnectionStatus(Handler uiHandler, Context context, int connectionStatus) {
         Message msg = uiHandler.obtainMessage();
-        msg.what = BLUETOOTH_STATUS_RESPONSE;
+        msg.what = BLUETOOTH_CONNECTION_START_RESPONSE;
+        msg.obj = context;
+        // Hier könnte man auch einfach "msg.arg1" benutzen. Für spätere Erweiterbarkeit wird dennoch ein Bundle benutzt
         Bundle data = new Bundle();
-        data.putInt("status",status);
+        data.putInt("status",connectionStatus);
         msg.setData(data);
-        msg.obj = ctx;
         uiHandler.sendMessage(msg);
     }
-
-    public static void getPairedDevices(Handler netHandler, HostListView ctx){
-        Message msg = netHandler.obtainMessage();
-        msg.what = BLUETOOTH_PAIRED_DEVICES_REQUEST;
-        msg.obj = ctx;
-        netHandler.sendMessage(msg);
-    }
-
-    public static void sendBluetoothDevices(Handler uiHandler, HostListView ctx, Set<BluetoothDevice> devices){
-        Message msg = uiHandler.obtainMessage();
-        msg.what = BLUETOOTH_PAIRED_DEVICES_RESPONSE;
-        Bundle data = new Bundle();
-        BluetoothDevice[] bd = new BluetoothDevice[devices.size()];
-        devices.toArray(bd);
-        data.putParcelableArray("bluetoothDevices", bd);
-        msg.setData(data);
-        msg.obj = ctx;
-        uiHandler.sendMessage(msg);
-    }*/
-
 }

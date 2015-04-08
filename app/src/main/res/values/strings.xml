@@ -8,4 +8,5 @@
     <string name="DiscoveryRunning">Suche abbrechen...</string>
     <string name="NoBluetoothWarning">Kein Bluetooth-Adapter gefunden</string>
     <string name="BluetoothNotActivated">Bluetooth muss aktiviert werden</string>
+    <string name="ConnectionFailed">Verbindung fehlgeschlagen</string>
 </resources>

@@ -19,6 +19,8 @@ public class BluetoothManagement {
     public static final int BLUETOOTH_NOT_PRESENT = 0;
     public static final int BLUETOOTH_NOT_ENABLED = 1;
     public static final int BLUETOOTH_ENABLED = 2;
+    //Bluetooth Server und Clients benötigen eine (die gleiche!) hartkodierte UUID
+    public static final String UUID = "56c3c375-9b82-4be9-a43f-57ca51f6ce91";
 
     public BluetoothAdapter adapter;
     private Boolean isDiscovering = false;
