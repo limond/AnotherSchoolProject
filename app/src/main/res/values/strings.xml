@@ -8,4 +8,15 @@
     <string name="DiscoveryRunning">Suche abbrechen...</string>
     <string name="NoBluetoothWarning">Kein Bluetooth-Adapter gefunden</string>
     <string name="BluetoothNotActivated">Bluetooth muss aktiviert werden</string>
+    <string name="ConnectionFailed">Verbindung fehlgeschlagen</string>
+    <string name="yourName">Dein Bluetoothname ist:</string>
+    <string name="startServer">Server starten</string>
+    <string name="serverActive">Server aktiv</string>
+    <string name="connectedDevices">Verbundene Geräte:</string>
+    <string name="title_activity_create_server">Server erstellen</string>
+    <string name="title_activity_connect">Verbinden</string>
+    <string name="ServerCreationFailed">Konnte keinen Server erstellen</string>
+    <string name="ServerCreationSuccessfull">Server gestartet</string>
+    <string name="ServerStopFailed">Konnte Server nicht stoppen</string>
+    <string name="ServerStopSuccessfully">Server gestoppt</string>
 </resources>
