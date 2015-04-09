@@ -3,13 +3,16 @@ package com.mangostudio.anotherschoolproject;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Leon on 04.04.2015.
@@ -19,8 +22,11 @@ public class BluetoothManagement {
     public static final int BLUETOOTH_NOT_PRESENT = 0;
     public static final int BLUETOOTH_NOT_ENABLED = 1;
     public static final int BLUETOOTH_ENABLED = 2;
+    public static final int SERVER_CREATION_FAILED = 3;
+    public static final int SERVER_CREATION_SUCCESSFULL = 4;
     //Bluetooth Server und Clients benötigen eine (die gleiche!) hartkodierte UUID
     public static final String UUID = "56c3c375-9b82-4be9-a43f-57ca51f6ce91";
+
 
     public BluetoothAdapter adapter;
     private Boolean isDiscovering = false;
@@ -118,5 +124,10 @@ public class BluetoothManagement {
     //Name des eigenen Adapters
     public String getName(){
         return adapter.getName();
+    }
+
+    public BluetoothServerSocket startServer() throws IOException {
+        BluetoothServerSocket socket = adapter.listenUsingRfcommWithServiceRecord(CardGamesApplication.getContext().getResources().getString(R.string.app_name), java.util.UUID.fromString(BluetoothManagement.UUID));
+        return socket;
     }
 }

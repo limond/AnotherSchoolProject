@@ -15,4 +15,8 @@
     <string name="connectedDevices">Verbundene Geräte:</string>
     <string name="title_activity_create_server">Server erstellen</string>
     <string name="title_activity_connect">Verbinden</string>
+    <string name="ServerCreationFailed">Konnte keinen Server erstellen</string>
+    <string name="ServerCreationSuccessfull">Server gestartet</string>
+    <string name="ServerStopFailed">Konnte Server nicht stoppen</string>
+    <string name="ServerStopSuccessfully">Server gestoppt</string>
 </resources>

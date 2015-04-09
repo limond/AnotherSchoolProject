@@ -2,6 +2,7 @@ package com.mangostudio.anotherschoolproject;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import java.io.IOException;
+import java.util.logging.SocketHandler;
 
 /**
  * Created by limond on 06.03.15.
@@ -35,6 +37,17 @@ public class NetworkHandler extends Handler {
                     e.printStackTrace();
                     InterThreadCom.updateConnectionStatus(uiHandler, (Context) msg.obj,BluetoothConnection.CONNECTION_FAILED);
                 }
+                break;
+            case InterThreadCom.BLUETOOTH_SERVER_START_REQUEST:
+                BluetoothServerSocket serverSocket;
+                try {
+                    serverSocket = bluetooth.startServer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    InterThreadCom.updateServerStatus(uiHandler, BluetoothManagement.SERVER_CREATION_FAILED, null);
+                    break;
+                }
+                InterThreadCom.updateServerStatus(uiHandler, BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
                 break;
         }
     }

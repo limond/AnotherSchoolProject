@@ -10,18 +10,14 @@ import android.view.MenuItem;
 public class ConnectActivity extends ActionBarActivity {
     public BluetoothManagement bluetooth;
     public NetworkHandler netHandler;
-    private NetworkThread netThread;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
         bluetooth = new BluetoothManagement();
-        //Erstelle den Network-Thread
-        netThread = new NetworkThread();
-        netThread.start();
-        //Setze den Messege-Handler für den Netzwerkthread
-        netHandler = new NetworkHandler(netThread.getLooper());
+        netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
         registerHostListListeners();
     }
 

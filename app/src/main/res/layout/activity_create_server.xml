@@ -21,21 +21,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/startServer"
-            android:id="@+id/switch1"
-            android:layout_gravity="right"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="true" />
-    </RelativeLayout>
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

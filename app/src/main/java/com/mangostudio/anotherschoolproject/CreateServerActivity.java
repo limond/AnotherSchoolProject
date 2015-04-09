@@ -8,7 +8,8 @@ import android.widget.TextView;
 
 
 public class CreateServerActivity extends ActionBarActivity {
-    public BluetoothManagement bluetooth;
+    private BluetoothManagement bluetooth;
+    private NetworkHandler netHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +18,16 @@ public class CreateServerActivity extends ActionBarActivity {
         setContentView(R.layout.activity_create_server);
         bluetooth = new BluetoothManagement();
         registerCreateServerListeners();
+        netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
+        InterThreadCom.startServer(netHandler);
     }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        ((CardGamesApplication)getApplication()).getUIHandler().stopServer();
+    }
+
 
     public void registerCreateServerListeners(){
         final TextView btname = (TextView) findViewById(R.id.btname);
