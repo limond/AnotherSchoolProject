@@ -1,15 +1,29 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 public class CreateServerActivity extends ActionBarActivity {
     private BluetoothManagement bluetooth;
     private NetworkHandler netHandler;
+    BroadcastReceiver receiver;
+    public ArrayList<String> connectedList = new ArrayList<>();
+    public ArrayAdapter<String> arrAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,21 +31,54 @@ public class CreateServerActivity extends ActionBarActivity {
         //getActionBar().setDisplayHomeAsUpEnabled(true);
         setContentView(R.layout.activity_create_server);
         bluetooth = new BluetoothManagement();
-        registerCreateServerListeners();
         netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
-        InterThreadCom.startServer(netHandler);
+        registerCreateServerListeners();
     }
 
     @Override
     public void onStop(){
         super.onStop();
         ((CardGamesApplication)getApplication()).getUIHandler().stopServer();
+        if(receiver != null) unregisterReceiver(receiver);
     }
 
 
     public void registerCreateServerListeners(){
         final TextView btname = (TextView) findViewById(R.id.btname);
+        final Button toggleDiscoverable = (Button) findViewById(R.id.toggleDiscoverable);
+        final ListView connectedListView =(ListView) findViewById(R.id.connectedList);
+        arrAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, connectedList);
+        connectedListView.setAdapter(arrAdapter);
+
         btname.setText(bluetooth.getName());
+        toggleDiscoverable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*
+                    die folgenden drei Zeilen stammen aus der Bluetooth-Guide http://developer.android.com/guide/topics/connectivity/bluetooth.html
+                    und sind die einzige (sinnvolle) Lösung, um vom System anzufragen, es sichtbar zu machen
+                 */
+                Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+                startActivity(discoverableIntent);
+                toggleDiscoverable.setText(R.string.discoverable);
+                toggleDiscoverable.setEnabled(false);
+            }
+        });
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE,BluetoothAdapter.SCAN_MODE_NONE);
+                if(mode != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE){
+                    toggleDiscoverable.setText(R.string.makeDiscoverable);
+                    toggleDiscoverable.setEnabled(true);
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+        registerReceiver(receiver, filter);
+
+        InterThreadCom.startServer(netHandler, arrAdapter);
     }
 
     @Override

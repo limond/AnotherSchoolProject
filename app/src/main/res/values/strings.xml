@@ -19,4 +19,6 @@
     <string name="ServerCreationSuccessfull">Server gestartet</string>
     <string name="ServerStopFailed">Konnte Server nicht stoppen</string>
     <string name="ServerStopSuccessfully">Server gestoppt</string>
+    <string name="makeDiscoverable">Sichtbar machen</string>
+    <string name="discoverable">Gerät ist sichtbar</string>
 </resources>

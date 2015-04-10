@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.ArrayAdapter;
 
 import java.util.Set;
 
@@ -19,6 +21,7 @@ public class InterThreadCom {
     public final static int BLUETOOTH_CONNECTION_START_RESPONSE = 2;
     public final static int BLUETOOTH_SERVER_START_REQUEST = 3;
     public final static int BLUETOOTH_SERVER_STATUS_RESPONSE = 4;
+    public final static int BLUETOOTH_NEW_SOCKET_RESPONSE = 5;
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
     public static void connectToDevice(Handler netHandler,Context context, BluetoothDevice selectedDevice) {
@@ -43,9 +46,10 @@ public class InterThreadCom {
         uiHandler.sendMessage(msg);
     }
 
-    public static void startServer(Handler netHandler){
+    public static void startServer(Handler netHandler, ArrayAdapter<String> arrAdapter){
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_SERVER_START_REQUEST;
+        msg.obj = arrAdapter;
         netHandler.sendMessage(msg);
     }
 
@@ -56,6 +60,16 @@ public class InterThreadCom {
         data.putInt("status", status);
         msg.setData(data);
         msg.obj = serverSocket;
+        uiHandler.sendMessage(msg);
+    }
+
+    public static void newSocketOpened(UIHandler uiHandler, BluetoothSocket socket, ArrayAdapter arrAdapter) {
+        Message msg = uiHandler.obtainMessage();
+        msg.what = BLUETOOTH_NEW_SOCKET_RESPONSE;
+        Bundle data = new Bundle();
+        data.putParcelable("device",socket.getRemoteDevice());
+        msg.setData(data);
+        msg.obj = arrAdapter;
         uiHandler.sendMessage(msg);
     }
 }
