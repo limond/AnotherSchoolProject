@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 public class ConnectActivity extends ActionBarActivity {
     public BluetoothManagement bluetooth;
-    public NetworkHandler netHandler;
 
 
     @Override
@@ -17,7 +16,6 @@ public class ConnectActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
         bluetooth = new BluetoothManagement();
-        netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
         registerHostListListeners();
     }
 

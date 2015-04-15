@@ -17,10 +17,11 @@ import java.util.Set;
  * Created by Leon on 03.04.2015.
  */
 public class InterThreadCom {
-    public final static int BLUETOOTH_CONNECTION_START_REQUEST = 1;
-    public final static int BLUETOOTH_CONNECTION_START_RESPONSE = 2;
-    public final static int BLUETOOTH_SERVER_START_REQUEST = 3;
-    public final static int BLUETOOTH_SERVER_STATUS_RESPONSE = 4;
+    public static final int BLUETOOTH_CONNECTION_START_REQUEST = 1;
+    public static final int BLUETOOTH_CONNECTION_START_RESPONSE = 2;
+    public static final int BLUETOOTH_SERVER_START_REQUEST = 3;
+    public static final int BLUETOOTH_SERVER_STATUS_RESPONSE = 4;
+    public static final int BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST = 5;
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
     public static void connectToDevice(Context context, BluetoothDevice selectedDevice) {
@@ -51,6 +52,13 @@ public class InterThreadCom {
         Handler netHandler = CardGamesApplication.getNetworkHandler();
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_SERVER_START_REQUEST;
+        netHandler.sendMessage(msg);
+    }
+
+    public static void releaseAllSockets(){
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST;
         netHandler.sendMessage(msg);
     }
 

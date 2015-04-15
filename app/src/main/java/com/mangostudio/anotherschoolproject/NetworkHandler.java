@@ -10,12 +10,14 @@ import android.os.Looper;
 import android.os.Message;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by limond on 06.03.15.
  */
 public class NetworkHandler extends Handler {
     public BluetoothManagement bluetooth = new BluetoothManagement();
+    private ArrayList<BluetoothSocket> sockets = new ArrayList<>();
 
     public NetworkHandler(Looper l) {
        super(l);
@@ -51,10 +53,20 @@ public class NetworkHandler extends Handler {
                             Dieser Vorgang wird abgebrochen, indem der UI-Thread den serverSocket schließt und accept() eine Exception wirft.
                             Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
                          */
-                        BluetoothSocket socket = serverSocket.accept();
+                        sockets.add(serverSocket.accept());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+                break;
+            case InterThreadCom.BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST:
+                for(BluetoothSocket socket : sockets){
+                    try {
+                        socket.close();
+                        sockets.remove(socket);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
         }

@@ -42,6 +42,7 @@ public class CreateServerActivity extends ActionBarActivity {
         super.onStop();
         ((CardGamesApplication)getApplication()).getUIHandler().stopServer();
         if(receiver != null) unregisterReceiver(receiver);
+        InterThreadCom.releaseAllSockets();
     }
 
 
