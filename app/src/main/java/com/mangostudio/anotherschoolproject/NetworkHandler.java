@@ -24,7 +24,6 @@ public class NetworkHandler extends Handler {
     //Setze den Messege-Handler für den UI-Thread
     public UIHandler uiHandler = new UIHandler(Looper.getMainLooper());
     public BluetoothManagement bluetooth = new BluetoothManagement();
-    public ArrayList<BluetoothSocket> socketList = new ArrayList<>();
 
     public NetworkHandler(Looper l) {
        super(l);
@@ -61,9 +60,6 @@ public class NetworkHandler extends Handler {
                             Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
                          */
                         BluetoothSocket socket = serverSocket.accept();
-                        socketList.add(socket);
-                        InterThreadCom.newSocketOpened(uiHandler, socket, (ArrayAdapter) msg.obj);
-                        Log.i("CardGames", "socket verbunden");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

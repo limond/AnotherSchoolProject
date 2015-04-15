@@ -37,18 +37,7 @@ public class UIHandler extends Handler {
             case InterThreadCom.BLUETOOTH_SERVER_STATUS_RESPONSE:
                 handleStatusResponse(msg);
                 break;
-            case InterThreadCom.BLUETOOTH_NEW_SOCKET_RESPONSE:
-                handleNewSocket(msg);
-                break;
         }
-    }
-
-    private void handleNewSocket(Message msg) {
-        Bundle data = msg.getData();
-        BluetoothDevice device = data.getParcelable("device");
-        ArrayAdapter arrAdapter = (ArrayAdapter) msg.obj;
-        arrAdapter.add(device.getName());
-        arrAdapter.notifyDataSetChanged();
     }
 
     private void handleStatusResponse(Message msg) {
