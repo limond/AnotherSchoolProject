@@ -48,7 +48,7 @@ public class ConnectActivity extends ActionBarActivity {
                     (das System kann den Pairing-Dialog dazwischenschieben, das den Thread noch länger blockiert)
                     Damit das System keinen  "application not responding" Dialog anzeigt, wird der Network-Thread benutzt
                  */
-                InterThreadCom.connectToDevice(netHandler, getApplicationContext(), selectedDevice);
+                InterThreadCom.connectToDevice(getApplicationContext(), selectedDevice);
             }
         });
         //Werden neue Geräte gefunden, werden diese der UI-Komponente HostListView mitgeteilt

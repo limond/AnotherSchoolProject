@@ -1,6 +1,5 @@
 package com.mangostudio.anotherschoolproject;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
@@ -9,20 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.SocketHandler;
 
 /**
  * Created by limond on 06.03.15.
  */
 public class NetworkHandler extends Handler {
-    //Setze den Messege-Handler für den UI-Thread
-    public UIHandler uiHandler = new UIHandler(Looper.getMainLooper());
     public BluetoothManagement bluetooth = new BluetoothManagement();
 
     public NetworkHandler(Looper l) {
@@ -40,7 +32,7 @@ public class NetworkHandler extends Handler {
                     new BluetoothConnection(device);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    InterThreadCom.updateConnectionStatus(uiHandler, (Context) msg.obj,BluetoothConnection.CONNECTION_FAILED);
+                    InterThreadCom.updateConnectionStatus((Context) msg.obj,BluetoothConnection.CONNECTION_FAILED);
                 }
                 break;
             case InterThreadCom.BLUETOOTH_SERVER_START_REQUEST:
@@ -49,10 +41,10 @@ public class NetworkHandler extends Handler {
                     serverSocket = bluetooth.startServer();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    InterThreadCom.updateServerStatus(uiHandler, BluetoothManagement.SERVER_CREATION_FAILED, null);
+                    InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_FAILED, null);
                     break;
                 }
-                InterThreadCom.updateServerStatus(uiHandler, BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
+                InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
                 try {
                     while (true) {
                         /*

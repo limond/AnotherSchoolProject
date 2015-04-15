@@ -97,7 +97,7 @@ public class CreateServerActivity extends ActionBarActivity {
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(receiver, filter);
 
-        InterThreadCom.startServer(netHandler);
+        InterThreadCom.startServer();
     }
 
     private void updateList() {

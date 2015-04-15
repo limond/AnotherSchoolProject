@@ -23,18 +23,20 @@ public class InterThreadCom {
     public final static int BLUETOOTH_SERVER_STATUS_RESPONSE = 4;
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
-    public static void connectToDevice(Handler netHandler,Context context, BluetoothDevice selectedDevice) {
+    public static void connectToDevice(Context context, BluetoothDevice selectedDevice) {
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_REQUEST;
         msg.obj = context;
         Bundle data = new Bundle();
         //Das Objekt Bluetooth-Gerät wird für den Transport in den anderen Thread "flach gemacht" und kommt in Bündel, das an die Nachricht angefügt wird
-        data.putParcelable("device",selectedDevice);
+        data.putParcelable("device", selectedDevice);
         msg.setData(data);
         netHandler.sendMessage(msg);
     }
 
-    public static void updateConnectionStatus(Handler uiHandler, Context context, int connectionStatus) {
+    public static void updateConnectionStatus(Context context, int connectionStatus) {
+        Handler uiHandler = CardGamesApplication.getUIHandler();
         Message msg = uiHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_RESPONSE;
         msg.obj = context;
@@ -45,13 +47,15 @@ public class InterThreadCom {
         uiHandler.sendMessage(msg);
     }
 
-    public static void startServer(Handler netHandler){
+    public static void startServer(){
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_SERVER_START_REQUEST;
         netHandler.sendMessage(msg);
     }
 
-    public static void updateServerStatus(UIHandler uiHandler, int status, BluetoothServerSocket serverSocket) {
+    public static void updateServerStatus(int status, BluetoothServerSocket serverSocket) {
+        Handler uiHandler = CardGamesApplication.getUIHandler();
         Message msg = uiHandler.obtainMessage();
         msg.what = BLUETOOTH_SERVER_STATUS_RESPONSE;
         Bundle data = new Bundle();
