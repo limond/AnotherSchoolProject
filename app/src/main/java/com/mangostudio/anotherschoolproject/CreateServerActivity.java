@@ -61,8 +61,6 @@ public class CreateServerActivity extends ActionBarActivity {
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
                 startActivity(discoverableIntent);
-                toggleDiscoverable.setText(R.string.discoverable);
-                toggleDiscoverable.setEnabled(false);
             }
         });
         receiver = new BroadcastReceiver() {
@@ -72,6 +70,10 @@ public class CreateServerActivity extends ActionBarActivity {
                 if(mode != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE){
                     toggleDiscoverable.setText(R.string.makeDiscoverable);
                     toggleDiscoverable.setEnabled(true);
+                }
+                else{
+                    toggleDiscoverable.setText(R.string.discoverable);
+                    toggleDiscoverable.setEnabled(false);
                 }
             }
         };
