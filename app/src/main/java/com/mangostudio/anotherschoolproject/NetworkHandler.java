@@ -34,7 +34,7 @@ public class NetworkHandler extends Handler {
                     new BluetoothConnection(device);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    InterThreadCom.updateConnectionStatus((Context) msg.obj,BluetoothConnection.CONNECTION_FAILED);
+                    InterThreadCom.updateConnectionStatus(BluetoothConnection.CONNECTION_FAILED);
                 }
                 break;
             case InterThreadCom.BLUETOOTH_SERVER_START_REQUEST:

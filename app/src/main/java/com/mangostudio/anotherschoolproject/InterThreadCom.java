@@ -24,11 +24,10 @@ public class InterThreadCom {
     public static final int BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST = 5;
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
-    public static void connectToDevice(Context context, BluetoothDevice selectedDevice) {
+    public static void connectToDevice(BluetoothDevice selectedDevice) {
         Handler netHandler = CardGamesApplication.getNetworkHandler();
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_REQUEST;
-        msg.obj = context;
         Bundle data = new Bundle();
         //Das Objekt Bluetooth-Gerät wird für den Transport in den anderen Thread "flach gemacht" und kommt in Bündel, das an die Nachricht angefügt wird
         data.putParcelable("device", selectedDevice);
@@ -36,11 +35,10 @@ public class InterThreadCom {
         netHandler.sendMessage(msg);
     }
 
-    public static void updateConnectionStatus(Context context, int connectionStatus) {
+    public static void updateConnectionStatus(int connectionStatus) {
         Handler uiHandler = CardGamesApplication.getUIHandler();
         Message msg = uiHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_RESPONSE;
-        msg.obj = context;
         // Hier könnte man auch einfach "msg.arg1" benutzen. Für spätere Erweiterbarkeit wird dennoch ein Bundle benutzt
         Bundle data = new Bundle();
         data.putInt("status", connectionStatus);
