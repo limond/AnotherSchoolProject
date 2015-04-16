@@ -56,7 +56,7 @@ public class UIHandler extends Handler {
     private void handleConnectionStatus(Message msg) {
         Bundle data = msg.getData();
         switch(data.getInt("status")){
-            case BluetoothConnection.CONNECTION_FAILED:
+            case BluetoothManagement.CONNECTION_FAILED:
                 Toast.makeText(CardGamesApplication.getContext(),R.string.ConnectionFailed, Toast.LENGTH_LONG).show();
                 break;
         }

@@ -11,6 +11,7 @@ import android.os.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by limond on 06.03.15.
@@ -31,10 +32,12 @@ public class NetworkHandler extends Handler {
                 Bundle data = msg.getData();
                 BluetoothDevice device = data.getParcelable("device");
                 try {
-                    new BluetoothConnection(device);
+                    BluetoothSocket socket = device.createRfcommSocketToServiceRecord(UUID.fromString(BluetoothManagement.UUID));
+                    socket.connect();
+                    sockets.add(socket);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    InterThreadCom.updateConnectionStatus(BluetoothConnection.CONNECTION_FAILED);
+                    InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_FAILED);
                 }
                 break;
             case InterThreadCom.BLUETOOTH_SERVER_START_REQUEST:
@@ -63,11 +66,11 @@ public class NetworkHandler extends Handler {
                 for(BluetoothSocket socket : sockets){
                     try {
                         socket.close();
-                        sockets.remove(socket);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+                sockets.clear();
                 break;
         }
     }
