@@ -1,6 +1,7 @@
 package com.mangostudio.anotherschoolproject;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ public class CreateServerActivity extends ActionBarActivity {
     BroadcastReceiver receiver;
     public ArrayList<String> connectedList = new ArrayList<>();
     public ArrayAdapter<String> arrAdapter;
+    private ArrayList<BluetoothDevice> connectedDevices = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class CreateServerActivity extends ActionBarActivity {
         super.onStop();
         ((CardGamesApplication)getApplication()).getUIHandler().stopServer();
         if(receiver != null) unregisterReceiver(receiver);
+        InterThreadCom.releaseAllSockets();
     }
 
 
@@ -61,24 +64,49 @@ public class CreateServerActivity extends ActionBarActivity {
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
                 startActivity(discoverableIntent);
-                toggleDiscoverable.setText(R.string.discoverable);
-                toggleDiscoverable.setEnabled(false);
             }
         });
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE,BluetoothAdapter.SCAN_MODE_NONE);
-                if(mode != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE){
-                    toggleDiscoverable.setText(R.string.makeDiscoverable);
-                    toggleDiscoverable.setEnabled(true);
+                if(intent.getAction().equals("ACTION_SCAN_MODE_CHANGED")) {
+                    int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.SCAN_MODE_NONE);
+                    if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+                        toggleDiscoverable.setText(R.string.discoverable);
+                        toggleDiscoverable.setEnabled(false);
+                    }
+                    else {
+                        toggleDiscoverable.setText(R.string.makeDiscoverable);
+                        toggleDiscoverable.setEnabled(true);
+                    }
+                }
+                else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    connectedDevices.add(device);
+                    updateList();
+                }
+                else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    connectedDevices.remove(device);
+                    updateList();
                 }
             }
         };
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         registerReceiver(receiver, filter);
 
-        InterThreadCom.startServer(netHandler, arrAdapter);
+        InterThreadCom.startServer();
+    }
+
+    private void updateList() {
+        arrAdapter.clear();
+        for(BluetoothDevice device : connectedDevices){
+            arrAdapter.add(device.getName());
+        }
+        arrAdapter.notifyDataSetChanged();
     }
 
     @Override

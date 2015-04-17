@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 public class ConnectActivity extends ActionBarActivity {
     public BluetoothManagement bluetooth;
-    public NetworkHandler netHandler;
 
 
     @Override
@@ -17,7 +16,6 @@ public class ConnectActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
         bluetooth = new BluetoothManagement();
-        netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
         registerHostListListeners();
     }
 
@@ -48,7 +46,7 @@ public class ConnectActivity extends ActionBarActivity {
                     (das System kann den Pairing-Dialog dazwischenschieben, das den Thread noch länger blockiert)
                     Damit das System keinen  "application not responding" Dialog anzeigt, wird der Network-Thread benutzt
                  */
-                InterThreadCom.connectToDevice(netHandler, getApplicationContext(), selectedDevice);
+                InterThreadCom.connectToDevice(selectedDevice);
             }
         });
         //Werden neue Geräte gefunden, werden diese der UI-Komponente HostListView mitgeteilt

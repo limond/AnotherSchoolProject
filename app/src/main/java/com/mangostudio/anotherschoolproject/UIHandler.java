@@ -37,18 +37,7 @@ public class UIHandler extends Handler {
             case InterThreadCom.BLUETOOTH_SERVER_STATUS_RESPONSE:
                 handleStatusResponse(msg);
                 break;
-            case InterThreadCom.BLUETOOTH_NEW_SOCKET_RESPONSE:
-                handleNewSocket(msg);
-                break;
         }
-    }
-
-    private void handleNewSocket(Message msg) {
-        Bundle data = msg.getData();
-        BluetoothDevice device = data.getParcelable("device");
-        ArrayAdapter arrAdapter = (ArrayAdapter) msg.obj;
-        arrAdapter.add(device.getName());
-        arrAdapter.notifyDataSetChanged();
     }
 
     private void handleStatusResponse(Message msg) {
@@ -67,8 +56,8 @@ public class UIHandler extends Handler {
     private void handleConnectionStatus(Message msg) {
         Bundle data = msg.getData();
         switch(data.getInt("status")){
-            case BluetoothConnection.CONNECTION_FAILED:
-                Toast.makeText((Context) msg.obj,R.string.ConnectionFailed, Toast.LENGTH_LONG).show();
+            case BluetoothManagement.CONNECTION_FAILED:
+                Toast.makeText(CardGamesApplication.getContext(),R.string.ConnectionFailed, Toast.LENGTH_LONG).show();
                 break;
         }
     }

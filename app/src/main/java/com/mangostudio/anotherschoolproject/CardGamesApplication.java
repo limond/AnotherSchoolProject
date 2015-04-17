@@ -3,12 +3,15 @@ package com.mangostudio.anotherschoolproject;
 import android.app.Application;
 import android.bluetooth.BluetoothServerSocket;
 import android.content.Context;
+import android.os.Looper;
 
 /**
  * Created by Leon on 09.04.2015.
  */
 public class CardGamesApplication extends Application {
-    private NetworkHandler netHandler;
+    private static NetworkHandler netHandler;
+    //Setze den Messege-Handler für den UI-Thread
+    private static UIHandler uiHandler = new UIHandler(Looper.getMainLooper());
     private NetworkThread netThread;
     private static Context context;
 
@@ -23,12 +26,12 @@ public class CardGamesApplication extends Application {
         netHandler = new NetworkHandler(netThread.getLooper());
     }
 
-    public NetworkHandler getNetworkHandler() {
+    public static NetworkHandler getNetworkHandler() {
         return netHandler;
     }
 
-    public UIHandler getUIHandler() {
-        return netHandler.uiHandler;
+    public static UIHandler getUIHandler() {
+        return uiHandler;
     }
 
     public static Context getContext() {
