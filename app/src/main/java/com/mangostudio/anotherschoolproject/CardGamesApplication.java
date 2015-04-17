@@ -22,7 +22,7 @@ public class CardGamesApplication extends Application {
         //Erstelle den Network-Thread
         netThread = new NetworkThread();
         netThread.start();
-        //Setze den Messege-Handler für den Netzwerkthread
+        //Setze den Message-Handler für den Netzwerkthread
         netHandler = new NetworkHandler(netThread.getLooper());
     }
 
