@@ -30,7 +30,7 @@ public class BluetoothManagement {
 
 
     public BluetoothAdapter adapter;
-    private Boolean isDiscovering = false;
+    private boolean isDiscovering = false;
     private BroadcastReceiver receiver;
     private OnNewDeviceListener newDeviceListener;
     private OnDiscoveryFinishedBySystemListener discoveryFinishedListener;
