@@ -40,6 +40,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
+    //Baut einen Socket zum Host auf
     private void connectionStart(Message msg){
         Bundle data = msg.getData();
         BluetoothDevice device = data.getParcelable("device");
@@ -53,6 +54,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
+    //Erstellt einen ServerSocket, um Verbindungen annehmen zu können
     private void startServer(){
         BluetoothServerSocket serverSocket;
         try {
@@ -76,6 +78,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
+    //Gibt alle Sockets frei, die bisher verbunden und noch nicht freigegeben wurden
     private void releaseSockets() {
         for(BluetoothSocket socket : sockets){
             try {

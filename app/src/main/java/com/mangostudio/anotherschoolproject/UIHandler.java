@@ -39,7 +39,7 @@ public class UIHandler extends Handler {
                 break;
         }
     }
-
+    //Gibt als Nachricht aus, ob der Server gestartet werden konnte
     private void handleStatusResponse(Message msg) {
         Bundle data = msg.getData();
         switch(data.getInt("status")){
@@ -53,6 +53,7 @@ public class UIHandler extends Handler {
         }
     }
 
+    //Gibt als Nachricht aus, wenn keine Verbindung zum Host aufgebaut werden konnte
     private void handleConnectionStatus(Message msg) {
         Bundle data = msg.getData();
         switch(data.getInt("status")){
@@ -62,6 +63,7 @@ public class UIHandler extends Handler {
         }
     }
 
+    //Gibt als Nachricht aus, ob der Server gestartet werden konnte
     public void stopServer(){
         if (currentServerSocket == null) return;
         try {

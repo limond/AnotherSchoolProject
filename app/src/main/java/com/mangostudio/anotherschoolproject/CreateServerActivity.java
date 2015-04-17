@@ -68,6 +68,7 @@ public class CreateServerActivity extends ActionBarActivity {
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                //Ändert den Button, je nachdem, ob das Gerät tatsächlich sichtbar ist oder nicht
                 if(intent.getAction().equals("ACTION_SCAN_MODE_CHANGED")) {
                     int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.SCAN_MODE_NONE);
                     if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
@@ -79,6 +80,7 @@ public class CreateServerActivity extends ActionBarActivity {
                         toggleDiscoverable.setEnabled(true);
                     }
                 }
+                //Wenn ein Gerät verbunden wurde, benachrichtigt Android das UI
                 else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     connectedDevices.add(device);
