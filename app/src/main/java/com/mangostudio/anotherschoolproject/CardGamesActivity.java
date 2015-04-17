@@ -24,8 +24,12 @@ public class CardGamesActivity extends ActionBarActivity {
         //Fragt, ob es einen Bluetooth-Adapter gibt und ob dieser aktiviert ist und handelt, wenn nicht
         bluetooth.checkBluetooth(this);
         registerMainLayoutListeners();
+        InterThreadCom.releaseAllSockets();
     }
-
+    protected void onResume(){
+        super.onResume();
+        InterThreadCom.releaseAllSockets();
+    }
     public void registerMainLayoutListeners(){
         final Button host = (Button) findViewById(R.id.host);
         final Button connect = (Button) findViewById(R.id.connect);

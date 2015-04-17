@@ -29,49 +29,61 @@ public class NetworkHandler extends Handler {
         super.handleMessage(msg);
         switch(msg.what){
             case InterThreadCom.BLUETOOTH_CONNECTION_START_REQUEST:
-                Bundle data = msg.getData();
-                BluetoothDevice device = data.getParcelable("device");
-                try {
-                    BluetoothSocket socket = device.createRfcommSocketToServiceRecord(UUID.fromString(BluetoothManagement.UUID));
-                    socket.connect();
-                    sockets.add(socket);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_FAILED);
-                }
+                connectionStart(msg);
                 break;
             case InterThreadCom.BLUETOOTH_SERVER_START_REQUEST:
-                BluetoothServerSocket serverSocket;
-                try {
-                    serverSocket = bluetooth.startServer();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_FAILED, null);
-                    break;
-                }
-                InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
-                try {
-                    while (true) {
+                startServer();
+                break;
+            case InterThreadCom.BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST:
+                releaseSockets();
+                break;
+        }
+    }
+
+    private void connectionStart(Message msg){
+        Bundle data = msg.getData();
+        BluetoothDevice device = data.getParcelable("device");
+        try {
+            BluetoothSocket socket = device.createRfcommSocketToServiceRecord(UUID.fromString(BluetoothManagement.UUID));
+            socket.connect();
+            sockets.add(socket);
+        } catch (IOException e) {
+            e.printStackTrace();
+            InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_FAILED);
+        }
+    }
+
+    private void startServer(){
+        BluetoothServerSocket serverSocket;
+        try {
+            serverSocket = bluetooth.startServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+            InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_FAILED, null);
+            return;
+        }
+        InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
+        try {
+            while (true) {
                         /*
                             Dieser Vorgang wird abgebrochen, indem der UI-Thread den serverSocket schließt und accept() eine Exception wirft.
                             Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
                          */
-                        sockets.add(serverSocket.accept());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case InterThreadCom.BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST:
-                for(BluetoothSocket socket : sockets){
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                sockets.clear();
-                break;
+                sockets.add(serverSocket.accept());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    private void releaseSockets() {
+        for(BluetoothSocket socket : sockets){
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        sockets.clear();
     }
 }
