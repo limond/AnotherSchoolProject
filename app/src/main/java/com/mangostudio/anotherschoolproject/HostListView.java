@@ -27,7 +27,7 @@ public class HostListView extends ListView {
 
     public ArrayList<String> HostList = new ArrayList<>();
     public ArrayAdapter<String> arrAdapter;
-    public Boolean isSearching = false;
+    public boolean isSearching = false;
     public OnDiscoveryStatusChangeRequestListener statusListener;
     public LinkedHashSet<BluetoothDevice> devices;
 
