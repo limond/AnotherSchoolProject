@@ -21,4 +21,7 @@
     <string name="ServerStopSuccessfully">Server gestoppt</string>
     <string name="makeDiscoverable">Sichtbar machen</string>
     <string name="discoverable">Gerät ist sichtbar</string>
+    <string name="title_activity_game_client">Kartenspiel (Client)</string>
+    <string name="waitForGameStart">Warte bis %1$s das Spiel startet</string>
+    <string name="actionbar_start_game">Start</string>
 </resources>

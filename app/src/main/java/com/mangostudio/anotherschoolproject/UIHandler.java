@@ -60,6 +60,15 @@ public class UIHandler extends Handler {
             case BluetoothManagement.CONNECTION_FAILED:
                 Toast.makeText(CardGamesApplication.getContext(),R.string.ConnectionFailed, Toast.LENGTH_LONG).show();
                 break;
+            case BluetoothManagement.CONNECTION_SUCCESSFULL:
+                //Öffne die GameClientActivity und übergib das Gerät mit aktivem Socket
+                Context ctx = CardGamesApplication.getContext();
+                Intent gameClientIntent = new Intent(ctx, GameClientActivity.class);
+                gameClientIntent.putExtra("device",data.getParcelable("device"));
+                //Ermöglicht das Öffnen von Activities außerhalb des Activity-Kontextes
+                gameClientIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(gameClientIntent);
+                break;
         }
     }
 

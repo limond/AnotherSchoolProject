@@ -25,6 +25,7 @@ public class BluetoothManagement {
     public static final int SERVER_CREATION_FAILED = 3;
     public static final int SERVER_CREATION_SUCCESSFULL = 4;
     public static final int CONNECTION_FAILED = 5;
+    public static final int CONNECTION_SUCCESSFULL = 6;
     //Bluetooth Server und Clients benötigen eine (die gleiche!) hartkodierte UUID
     public static final String UUID = "56c3c375-9b82-4be9-a43f-57ca51f6ce91";
 

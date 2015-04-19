@@ -35,13 +35,13 @@ public class InterThreadCom {
         netHandler.sendMessage(msg);
     }
 
-    public static void updateConnectionStatus(int connectionStatus) {
+    public static void updateConnectionStatus(int connectionStatus, BluetoothDevice device) {
         Handler uiHandler = CardGamesApplication.getUIHandler();
         Message msg = uiHandler.obtainMessage();
         msg.what = BLUETOOTH_CONNECTION_START_RESPONSE;
-        // Hier könnte man auch einfach "msg.arg1" benutzen. Für spätere Erweiterbarkeit wird dennoch ein Bundle benutzt
         Bundle data = new Bundle();
         data.putInt("status", connectionStatus);
+        if(device != null) data.putParcelable("device",device);
         msg.setData(data);
         uiHandler.sendMessage(msg);
     }

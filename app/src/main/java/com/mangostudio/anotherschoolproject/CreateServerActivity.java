@@ -26,6 +26,8 @@ public class CreateServerActivity extends ActionBarActivity {
     public ArrayList<String> connectedList = new ArrayList<>();
     public ArrayAdapter<String> arrAdapter;
     private ArrayList<BluetoothDevice> connectedDevices = new ArrayList<>();
+    private MenuItem startGameButton;
+    private IntentFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +40,17 @@ public class CreateServerActivity extends ActionBarActivity {
     }
 
     @Override
-    public void onStop(){
+    protected void onStop(){
         super.onStop();
         ((CardGamesApplication)getApplication()).getUIHandler().stopServer();
         if(receiver != null) unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        InterThreadCom.startServer();
+        if(receiver != null) registerReceiver(receiver, filter);
     }
 
 
@@ -93,7 +102,7 @@ public class CreateServerActivity extends ActionBarActivity {
                 }
             }
         };
-        IntentFilter filter = new IntentFilter();
+        filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
@@ -107,6 +116,12 @@ public class CreateServerActivity extends ActionBarActivity {
         for(BluetoothDevice device : connectedDevices){
             arrAdapter.add(device.getName());
         }
+        if(arrAdapter.getCount()>0){
+            startGameButton.setEnabled(true);
+        }
+        else{
+            startGameButton.setEnabled(false);
+        }
         arrAdapter.notifyDataSetChanged();
     }
 
@@ -114,6 +129,8 @@ public class CreateServerActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_create_server, menu);
+        startGameButton = menu.findItem(R.id.action_start_game);
+        startGameButton.setEnabled(false);
         return true;
     }
 

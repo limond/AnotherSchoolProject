@@ -48,9 +48,10 @@ public class NetworkHandler extends Handler {
             BluetoothSocket socket = device.createRfcommSocketToServiceRecord(UUID.fromString(BluetoothManagement.UUID));
             socket.connect();
             sockets.add(socket);
+            InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_SUCCESSFULL, device);
         } catch (IOException e) {
             e.printStackTrace();
-            InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_FAILED);
+            InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_FAILED, null);
         }
     }
 

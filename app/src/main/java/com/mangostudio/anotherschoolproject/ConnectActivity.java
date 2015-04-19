@@ -1,6 +1,11 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,6 +22,13 @@ public class ConnectActivity extends ActionBarActivity {
         setContentView(R.layout.activity_connect);
         bluetooth = new BluetoothManagement();
         registerHostListListeners();
+        InterThreadCom.releaseAllSockets();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        InterThreadCom.releaseAllSockets();
     }
 
     public void registerHostListListeners(){
@@ -87,8 +99,8 @@ public class ConnectActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void onDestroy(){
-        super.onDestroy();
+    protected void onStop(){
+        super.onStop();
         //Bevor die Activity durch das System geschlossen wird, wird die Bluetooth-Suche abgebrochen
         if(bluetooth.isDiscovering()) bluetooth.cancelDiscovery(getApplicationContext());
     }
