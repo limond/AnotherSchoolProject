@@ -3,6 +3,7 @@ package com.mangostudio.anotherschoolproject;
 import android.app.Application;
 import android.bluetooth.BluetoothServerSocket;
 import android.content.Context;
+import android.os.HandlerThread;
 import android.os.Looper;
 
 /**
@@ -12,7 +13,7 @@ public class CardGamesApplication extends Application {
     private static NetworkHandler netHandler;
     //Setze den Messege-Handler für den UI-Thread
     private static UIHandler uiHandler = new UIHandler(Looper.getMainLooper());
-    private NetworkThread netThread;
+    private HandlerThread netThread;
     private static Context context;
 
     @Override
@@ -20,7 +21,7 @@ public class CardGamesApplication extends Application {
         super.onCreate();
         this.context = this.getApplicationContext();
         //Erstelle den Network-Thread
-        netThread = new NetworkThread();
+        netThread = new HandlerThread("NetworkThread");
         netThread.start();
         //Setze den Message-Handler für den Netzwerkthread
         netHandler = new NetworkHandler(netThread.getLooper());

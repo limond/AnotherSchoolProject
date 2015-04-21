@@ -22,6 +22,7 @@ public class InterThreadCom {
     public static final int BLUETOOTH_SERVER_START_REQUEST = 3;
     public static final int BLUETOOTH_SERVER_STATUS_RESPONSE = 4;
     public static final int BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST = 5;
+    public static final int BLUETOOTH_HANDLE_INPUT_PACKAGE = 6;
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
     public static void connectToDevice(BluetoothDevice selectedDevice) {
@@ -69,5 +70,16 @@ public class InterThreadCom {
         msg.setData(data);
         msg.obj = serverSocket;
         uiHandler.sendMessage(msg);
+    }
+
+    public static void handleInputPackage(BluetoothPackage btPackage, String source){
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_HANDLE_INPUT_PACKAGE;
+        Bundle data = new Bundle();
+        data.putSerializable("package",btPackage);
+        data.putString("source",source);
+        msg.setData(data);
+        netHandler.sendMessage(msg);
     }
 }
