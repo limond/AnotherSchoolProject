@@ -14,7 +14,6 @@ import android.view.MenuItem;
 
 public class ConnectActivity extends ActionBarActivity {
     public BluetoothManagement bluetooth;
-    private BroadcastReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,21 +74,6 @@ public class ConnectActivity extends ActionBarActivity {
                 list.setSearchingAppereance(HostListView.DISCOVERY_STOP);
             }
         });
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                //Wenn zum Host verbunden wurde wird zur GameClientActivity gewechselt
-                if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    Intent gameClientIntent = new Intent(ConnectActivity.this, GameClientActivity.class);
-                    gameClientIntent.putExtra("device",device);
-                    startActivity(gameClientIntent);
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        registerReceiver(receiver, filter);
     }
 
     @Override
