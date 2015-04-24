@@ -16,10 +16,10 @@ public class BluetoothMultiLayerConnection {
     private ObjectOutputStream outStream;
     private BluetoothPackageInputThread inputThread;
 
-    public BluetoothMultiLayerConnection(BluetoothSocket socket, ObjectInputStream inStream, ObjectOutputStream outStream){
+    public BluetoothMultiLayerConnection(BluetoothSocket socket) throws IOException {
         this.socket = socket;
-        this.inStream = inStream;
-        this.outStream = outStream;
+        this.outStream = new ObjectOutputStream(socket.getOutputStream());
+        this.inStream = new ObjectInputStream(socket.getInputStream());
         this.inputThread = new BluetoothPackageInputThread(inStream, socket.getRemoteDevice().getAddress());
         inputThread.start();
     }
@@ -28,5 +28,13 @@ public class BluetoothMultiLayerConnection {
         inStream.close();
         outStream.close();
         socket.close();
+    }
+
+    public ObjectOutputStream getOutStream(){
+        return this.outStream;
+    }
+
+    public ObjectInputStream getInStream(){
+        return this.inStream;
     }
 }

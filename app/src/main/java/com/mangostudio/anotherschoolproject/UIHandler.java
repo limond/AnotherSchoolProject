@@ -37,8 +37,17 @@ public class UIHandler extends Handler {
             case InterThreadCom.BLUETOOTH_SERVER_STATUS_RESPONSE:
                 handleStatusResponse(msg);
                 break;
+            case InterThreadCom.SEND_MSG_TO_UI:
+                handleBtPackageMessage(msg);
+                break;
+            //case InterThreadCom.
         }
     }
+
+    private void handleBtPackageMessage(Message msg) {
+
+    }
+
     //Gibt als Nachricht aus, ob der Server gestartet werden konnte
     private void handleStatusResponse(Message msg) {
         Bundle data = msg.getData();
@@ -61,11 +70,11 @@ public class UIHandler extends Handler {
                 Toast.makeText(CardGamesApplication.getContext(),R.string.ConnectionFailed, Toast.LENGTH_LONG).show();
                 break;
             case BluetoothManagement.CONNECTION_SUCCESSFULL:
-                //Öffne die GameClientActivity und übergib das Gerät mit aktivem Socket
+                //Oeffne die GameClientActivity und uebergib das Geraet mit aktivem Socket
                 Context ctx = CardGamesApplication.getContext();
                 Intent gameClientIntent = new Intent(ctx, GameClientActivity.class);
-                gameClientIntent.putExtra("device",data.getParcelable("device"));
-                //Ermöglicht das Öffnen von Activities außerhalb des Activity-Kontextes
+                gameClientIntent.putExtra("device",(BluetoothDevice) data.getParcelable("device"));
+                //Ermoeglicht das Oeffnen von Activities aussserhalb des Activity-Kontextes
                 gameClientIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ctx.startActivity(gameClientIntent);
                 break;

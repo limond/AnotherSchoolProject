@@ -8,14 +8,14 @@ import java.io.ObjectInputStream;
 /**
  * Created by Leon on 19.04.2015.
  *
- * Dieser Thread wird den ObjectInputString so lange lesen und Packages über die InterThreadCom-Klasse an den NetHandler schicken,
+ * Dieser Thread wird den ObjectInputString so lange lesen und Packages ï¿½ber die InterThreadCom-Klasse an den NetHandler schicken,
  * bis der Thread geschlossen wird
  */
 public class BluetoothPackageInputThread extends Thread{
     private ObjectInputStream obInpStream;
     private String address;
 
-    public BluetoothPackageInputThread(ObjectInputStream obInpStream, String address){
+    public BluetoothPackageInputThread (ObjectInputStream obInpStream, String address) {
         super();
         this.obInpStream = obInpStream;
         this.address = address;

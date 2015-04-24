@@ -52,12 +52,10 @@ public class NetworkHandler extends Handler {
         try {
             BluetoothSocket socket = device.createRfcommSocketToServiceRecord(UUID.fromString(BluetoothManagement.UUID));
             socket.connect();
-            ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-            BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket,inStream,outStream);
-            connections.put(device.getAddress(),connection);
-            Thread.sleep(2000,0);
-            outStream.writeObject(new BluetoothPackage(42));//Das ist bisher nur ein Test
+            BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
+            connections.put(device.getAddress(), connection);
+            Thread.sleep(2000, 0);
+            connection.getOutStream().writeObject(new BluetoothPackage(42));//Das ist bisher nur ein Test
             InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_SUCCESSFULL, device);
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,9 +83,7 @@ public class NetworkHandler extends Handler {
                             Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
                          */
                 BluetoothSocket socket = serverSocket.accept();
-                ObjectOutputStream outStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream inStream = new ObjectInputStream(socket.getInputStream());
-                BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket,inStream,outStream);
+                BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
                 connections.put(socket.getRemoteDevice().getAddress(),connection);
             }
         } catch (IOException e) {
@@ -108,6 +104,8 @@ public class NetworkHandler extends Handler {
     }
 
     private void handleInputPackage(Message msg) {
-        Log.d("Test", "Test1");
+        //Bundle data = msg.getData();
+        //BluetoothPackage pkg = (BluetoothPackage) data.getSerializable("package");
+        InterThreadCom.sendPackageToUi(msg);
     }
 }
