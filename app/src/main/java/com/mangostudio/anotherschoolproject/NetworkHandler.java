@@ -54,7 +54,14 @@ public class NetworkHandler extends Handler {
             socket.connect();
             BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
             connections.put(device.getAddress(), connection);
-            connection.getOutStream().writeObject(new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI));//Das ist bisher nur ein Test
+
+            //Das ist bisher nur ein Test [ACTION_START_CLIENT_GAME wird später an einer ganz anderen Stelle eigentlich geschickt]
+            BluetoothPackage pkg = new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI, BluetoothPackage.ACTION_START_CLIENT_GAME);
+            Bundle pkgData = new Bundle();
+            pkgData.putString("test","lol");
+            pkg.setData(pkgData);
+            connection.getOutStream().writeObject(pkg);
+
             InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_SUCCESSFULL, device);
         } catch (IOException e) {
             e.printStackTrace();

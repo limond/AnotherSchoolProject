@@ -45,7 +45,6 @@ public class UIHandler extends Handler {
     }
 
     private void handleInputPackage(Message msg) {
-        Log.d("UiThread",msg.toString());
     }
 
     //Gibt als Nachricht aus, ob der Server gestartet werden konnte
