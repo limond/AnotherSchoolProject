@@ -37,15 +37,15 @@ public class UIHandler extends Handler {
             case InterThreadCom.BLUETOOTH_SERVER_STATUS_RESPONSE:
                 handleStatusResponse(msg);
                 break;
-            case InterThreadCom.SEND_MSG_TO_UI:
-                handleBtPackageMessage(msg);
+            case InterThreadCom.BLUETOOTH_HANDLE_INPUT_PACKAGE:
+                handleInputPackage(msg);
                 break;
             //case InterThreadCom.
         }
     }
 
-    private void handleBtPackageMessage(Message msg) {
-
+    private void handleInputPackage(Message msg) {
+        Log.d("UiThread",msg.toString());
     }
 
     //Gibt als Nachricht aus, ob der Server gestartet werden konnte

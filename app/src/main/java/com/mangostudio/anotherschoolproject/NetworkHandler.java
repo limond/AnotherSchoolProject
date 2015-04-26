@@ -54,14 +54,11 @@ public class NetworkHandler extends Handler {
             socket.connect();
             BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
             connections.put(device.getAddress(), connection);
-            Thread.sleep(2000, 0);
-            connection.getOutStream().writeObject(new BluetoothPackage(42));//Das ist bisher nur ein Test
+            connection.getOutStream().writeObject(new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI));//Das ist bisher nur ein Test
             InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_SUCCESSFULL, device);
         } catch (IOException e) {
             e.printStackTrace();
             InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_FAILED, null);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
@@ -103,9 +100,12 @@ public class NetworkHandler extends Handler {
         connections.clear();
     }
 
+    /*
+        Die Funktion behandelt Nachrichten der Verbindungspartner
+        ACHTUNG: Solange der Server neue Verbindungen akzeptiert kann der Handler keine Messages aus der MessageQueue verarbeiten
+        Nachrichten können in dieser Zeit stattdessen an den UiHandler geschickt werden
+     */
     private void handleInputPackage(Message msg) {
-        //Bundle data = msg.getData();
-        //BluetoothPackage pkg = (BluetoothPackage) data.getSerializable("package");
-        InterThreadCom.sendPackageToUi(msg);
+        Log.d("NetThread",msg.toString());
     }
 }

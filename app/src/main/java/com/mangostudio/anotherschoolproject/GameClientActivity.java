@@ -24,16 +24,16 @@ public class GameClientActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_client);
         decorView = getWindow().getDecorView();
-        //Bekomme das Intent und das deactivate acübergebene Gerät aus dem UI-Handler (das übergebene Gerät ist das mit aktivem Socket)
+        //Bekomme das Intent und das Ã¼bergebene GerÃ¤t aus dem UI-Handler (das Ã¼bergebene GerÃ¤t ist das mit aktivem Socket)
         Intent intent = getIntent();
         hostDevice = intent.getParcelableExtra("device");
         TextView waitMessage = (TextView) findViewById(R.id.waitMessage);
-        //Setzte die vom Gerätenamen abhänige Wartenachricht (bis Spielbeginn);
+        //Setzte die vom GerÃ¤tenamen abhÃ¤nige Wartenachricht (bis Spielbeginn);
         waitMessage.setText(getString(R.string.waitForGameStart,hostDevice.getName()));
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //Gehe zurück zum Verbindungsbildschirm, wenn Verbindung getrennt wird
+                //Gehe zurÃ¼ck zum Verbindungsbildschirm, wenn Verbindung getrennt wird
                 if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if(device.getAddress().equals(hostDevice.getAddress())) finish();
