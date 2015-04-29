@@ -57,9 +57,9 @@ public class NetworkHandler extends Handler {
 
             //Das ist bisher nur ein Test [ACTION_START_CLIENT_GAME wird später an einer ganz anderen Stelle eigentlich geschickt]
             BluetoothPackage pkg = new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI, BluetoothPackage.ACTION_START_CLIENT_GAME);
-            Bundle pkgData = new Bundle();
-            pkgData.putString("test","lol");
-            pkg.setData(pkgData);
+            HashMap<String,Object> pkgData = new HashMap<>();
+            pkgData.put("test","lol");
+            pkg.setAdditionalData(pkgData);
             connection.getOutStream().writeObject(pkg);
 
             InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_SUCCESSFULL, device);

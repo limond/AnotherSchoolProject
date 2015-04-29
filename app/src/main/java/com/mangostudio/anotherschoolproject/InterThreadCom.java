@@ -74,7 +74,7 @@ public class InterThreadCom {
 
     public static void handleInputPackage(BluetoothPackage btPackage, String source){
         Handler handler;
-        switch(btPackage.destination){
+        switch(btPackage.getDestination()){
             case BluetoothPackage.HANDLER_DESTINATION_NETWORK:
                 handler = CardGamesApplication.getNetworkHandler();
                 break;
