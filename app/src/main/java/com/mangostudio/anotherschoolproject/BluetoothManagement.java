@@ -128,6 +128,11 @@ public class BluetoothManagement {
         return adapter.getName();
     }
 
+    //Adresse des eigenen Adapters
+    public String getAddress(){
+        return adapter.getAddress();
+    }
+
     public BluetoothServerSocket startServer() throws IOException {
         BluetoothServerSocket socket = adapter.listenUsingRfcommWithServiceRecord(CardGamesApplication.getContext().getResources().getString(R.string.app_name), java.util.UUID.fromString(BluetoothManagement.UUID));
         return socket;

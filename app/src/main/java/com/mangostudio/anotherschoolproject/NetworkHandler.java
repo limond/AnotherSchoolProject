@@ -13,6 +13,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -49,6 +50,12 @@ public class NetworkHandler extends Handler {
             case InterThreadCom.BLUETOOTH_SOCKET_CLOSED:
                 handleSocketClosed(msg);
                 break;
+            case InterThreadCom.BLUETOOTH_SEND_PACKAGE:
+                handleSendPackage(msg);
+                break;
+            case InterThreadCom.GAME_START:
+                handleGameStart();
+                break;
         }
     }
 
@@ -61,14 +68,6 @@ public class NetworkHandler extends Handler {
             socket.connect();
             BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
             connections.put(device.getAddress(), connection);
-
-            //Das ist bisher nur ein Test [ACTION_START_CLIENT_GAME wird später an einer ganz anderen Stelle eigentlich geschickt]
-            BluetoothPackage pkg = new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI, BluetoothPackage.ACTION_START_CLIENT_GAME);
-            HashMap<String,Object> pkgData = new HashMap<>();
-            pkgData.put("test","lol");
-            pkg.setAdditionalData(pkgData);
-            connection.getOutStream().writeObject(pkg);
-
             InterThreadCom.updateConnectionStatus(BluetoothManagement.CONNECTION_SUCCESSFULL, device);
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,5 +137,57 @@ public class NetworkHandler extends Handler {
         Intent socketClosedIntent = new Intent(ACTION_SOCKET_CLOSED);
         socketClosedIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, remoteDevice);
         CardGamesApplication.getContext().sendBroadcast(socketClosedIntent);
+    }
+
+    //Behandelt ausgehende Pakete aus anderen Threads
+    private void handleSendPackage(Message msg) {
+        Bundle data = msg.getData();
+        if(data.getBoolean("broadcast")){
+            sendPackageBroadcast((BluetoothPackage) msg.obj);
+        }
+        else{
+            sendPackage((BluetoothPackage) msg.obj, data.getString("address"));
+        }
+    }
+
+    //Sendet ein Paket, nachdem die Adresse aufgelöst wurde
+    private void sendPackage(BluetoothPackage pkg, String address){
+        BluetoothMultiLayerConnection connection = connections.get(address);
+        if (connection != null) sendPackage(pkg, connection);
+    }
+
+    //Sendet ein Paket an eine Verbindung
+    private void sendPackage(BluetoothPackage pkg, BluetoothMultiLayerConnection connection){
+        try {
+            connection.getOutStream().writeObject(pkg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Sendet ein Paket an alle Verbindungen
+    private void sendPackageBroadcast(BluetoothPackage pkg){
+        for(BluetoothMultiLayerConnection connection : connections.values()){
+            sendPackage(pkg, connection);
+        }
+    }
+
+    /*
+        Startet das Spiel, indem ein entsprechender Broadcast gemacht wird.
+        Spielteilnehmer werden an die Spieler geschickt / bekanntgemacht
+     */
+    private void handleGameStart() {
+        BluetoothPackage startPackage = new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI, BluetoothPackage.ACTION_START_CLIENT_GAME);
+        HashMap<String, Object> mapData = new HashMap<>();
+        ArrayList<BluetoothDeviceRepresentation> deviceList = new ArrayList<>();
+        for(BluetoothMultiLayerConnection connection : connections.values()){
+            BluetoothDevice device = connection.getRemoteDevice();
+            BluetoothDeviceRepresentation deviceRepresentation = new BluetoothDeviceRepresentation(device.getName(), device.getAddress());
+            deviceList.add(deviceRepresentation);
+        }
+        mapData.put("clientList",deviceList);
+        mapData.put("host",new BluetoothDeviceRepresentation(bluetooth.getName(),bluetooth.getAddress()));
+        startPackage.setAdditionalData(mapData);
+        sendPackageBroadcast(startPackage);
     }
 }

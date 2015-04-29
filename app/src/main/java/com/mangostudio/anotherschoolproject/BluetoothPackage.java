@@ -17,7 +17,7 @@ public class BluetoothPackage implements Serializable {
 
     public int destination;
     public int action;
-    public HashMap additionalData;
+    public HashMap<String, Object> additionalData;
 
     BluetoothPackage(int destination, int action){
         //legt fest, von welchem Handler das Paket behandelt werden soll

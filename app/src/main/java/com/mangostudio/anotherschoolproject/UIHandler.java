@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class UIHandler extends Handler {
     }
 
     private void handleInputPackage(Message msg) {
+        Log.d("UiThread", msg.toString());
     }
 
     //Gibt als Nachricht aus, ob der Server gestartet werden konnte

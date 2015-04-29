@@ -24,6 +24,9 @@ public class InterThreadCom {
     public static final int BLUETOOTH_SERVER_RELEASE_SOCKETS_REQUEST = 5;
     public static final int BLUETOOTH_HANDLE_INPUT_PACKAGE = 6;
     public static final int BLUETOOTH_SOCKET_CLOSED = 7;
+    public static final int BLUETOOTH_SEND_PACKAGE = 8;
+
+    public static final int GAME_START = 9;
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
     public static void connectToDevice(BluetoothDevice selectedDevice) {
@@ -101,6 +104,41 @@ public class InterThreadCom {
         Bundle data = new Bundle();
         data.putString("address",address);
         msg.setData(data);
+        netHandler.sendMessage(msg);
+    }
+
+    /*
+        Die folgenden Methoden ermöglichen es aus anderen Threads Pakete an andere geräte zu schicken
+     */
+    public static void sendPackageBroadcast(BluetoothPackage pkg) {
+        //untested
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_SEND_PACKAGE;
+        Bundle data = new Bundle();
+        data.putBoolean("broadcast",true);
+        msg.obj = pkg;
+        msg.setData(data);
+        netHandler.sendMessage(msg);
+    }
+
+    public static void sendPackage(BluetoothPackage pkg, String address) {
+        //untested
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_SEND_PACKAGE;
+        Bundle data = new Bundle();
+        data.putBoolean("broadcast",false);
+        data.putString("address", address);
+        msg.obj = pkg;
+        msg.setData(data);
+        netHandler.sendMessage(msg);
+    }
+
+    public static void startGame() {
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = GAME_START;
         netHandler.sendMessage(msg);
     }
 }
