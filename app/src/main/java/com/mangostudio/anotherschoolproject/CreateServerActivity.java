@@ -32,7 +32,7 @@ public class CreateServerActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
+        InterThreadCom.releaseAllSockets();
         setContentView(R.layout.activity_create_server);
         bluetooth = new BluetoothManagement();
         netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
@@ -49,6 +49,9 @@ public class CreateServerActivity extends ActionBarActivity {
     @Override
     protected void onRestart(){
         super.onRestart();
+        InterThreadCom.releaseAllSockets();
+        connectedDevices.clear();
+        updateList();
         InterThreadCom.startServer();
         if(receiver != null) registerReceiver(receiver, filter);
     }
@@ -145,7 +148,10 @@ public class CreateServerActivity extends ActionBarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
+        if(id == R.id.action_start_game){
+            Intent gameHostIntent = new Intent(this, GameHostActivity.class);
+            startActivity(gameHostIntent);
+        }
         return super.onOptionsItemSelected(item);
     }
 }

@@ -34,6 +34,7 @@ public class BluetoothPackageInputThread extends Thread{
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+                InterThreadCom.handleSocketClosed(address);
                 return;
             }
         }

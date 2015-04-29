@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
-public class GameClientActivity extends ActionBarActivity {
+public class GameWaitActivity extends ActionBarActivity {
     private View decorView;
     private BluetoothDevice hostDevice;
     private BroadcastReceiver receiver;
@@ -34,16 +34,13 @@ public class GameClientActivity extends ActionBarActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //Gehe zurück zum Verbindungsbildschirm, wenn Verbindung getrennt wird
-                if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    if(device.getAddress().equals(hostDevice.getAddress())) finish();
-                }
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(device.getAddress().equals(hostDevice.getAddress())) finish();
             }
         };
         IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        filter.addAction(NetworkHandler.ACTION_SOCKET_CLOSED);
         registerReceiver(receiver, filter);
     }
 

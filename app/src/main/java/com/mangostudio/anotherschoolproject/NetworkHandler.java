@@ -3,6 +3,7 @@ package com.mangostudio.anotherschoolproject;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,6 +21,9 @@ import java.util.UUID;
  * Created by limond on 06.03.15.
  */
 public class NetworkHandler extends Handler {
+
+    public static final String ACTION_SOCKET_CLOSED = "com.mangostudio.anotherschoolproject.socketClosed";
+
     public BluetoothManagement bluetooth = new BluetoothManagement();
     private Map<String, BluetoothMultiLayerConnection> connections = new HashMap<>();
     public NetworkHandler(Looper l) {
@@ -41,6 +45,9 @@ public class NetworkHandler extends Handler {
                 break;
             case InterThreadCom.BLUETOOTH_HANDLE_INPUT_PACKAGE:
                 handleInputPackage(msg);
+                break;
+            case InterThreadCom.BLUETOOTH_SOCKET_CLOSED:
+                handleSocketClosed(msg);
                 break;
         }
     }
@@ -113,6 +120,23 @@ public class NetworkHandler extends Handler {
         Nachrichten können in dieser Zeit stattdessen an den UiHandler geschickt werden
      */
     private void handleInputPackage(Message msg) {
-        Log.d("NetThread",msg.toString());
+        Log.d("NetThread", msg.toString());
+    }
+
+    private void handleSocketClosed(Message msg) {
+        Bundle data = msg.getData();
+        String address = data.getString("address");
+        BluetoothMultiLayerConnection connection =  connections.get(address);
+        if(connection == null) return;
+        BluetoothDevice remoteDevice = connection.getRemoteDevice();
+        connections.remove(address);
+        /*
+            Normalerweise schickt das System nach ca. 10 Sekunden Trennung einen Broadcast, um getrennte Geräte mitzuteilen.
+            Hier wird ein Broadcast implementiert, der schneller sein soll, weil er gesendet wird, sobald der Socket schließt.
+            Hier wird auf die InterThreadCom-Klasse verzichtet, um den Broadcast gleichzeitig mit den Systemmeldungen behandeln zu können.
+         */
+        Intent socketClosedIntent = new Intent(ACTION_SOCKET_CLOSED);
+        socketClosedIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, remoteDevice);
+        CardGamesApplication.getContext().sendBroadcast(socketClosedIntent);
     }
 }

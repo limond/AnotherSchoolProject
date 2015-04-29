@@ -1,5 +1,6 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
@@ -36,5 +37,9 @@ public class BluetoothMultiLayerConnection {
 
     public ObjectInputStream getInStream(){
         return this.inStream;
+    }
+
+    public BluetoothDevice getRemoteDevice(){
+        return socket.getRemoteDevice();
     }
 }

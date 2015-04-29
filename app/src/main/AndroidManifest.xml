@@ -37,12 +37,20 @@
                 android:value=".CardGamesActivity" />
         </activity>
         <activity
-            android:name=".GameClientActivity"
+            android:name=".GameWaitActivity"
             android:label="@string/title_activity_game_client"
             android:parentActivityName=".ConnectActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mangostudio.anotherschoolproject.ConnectActivity" />
+        </activity>
+        <activity
+            android:name=".GameHostActivity"
+            android:label="@string/title_activity_game_host"
+            android:parentActivityName=".CreateServerActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mangostudio.anotherschoolproject.CreateServerActivity" />
         </activity>
     </application>
 
