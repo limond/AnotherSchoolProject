@@ -1,52 +1,22 @@
 package com.mangostudio.anotherschoolproject;
 
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 
-public class GameWaitActivity extends ActionBarActivity {
+public class GameClientActivity extends ActionBarActivity {
+
     private View decorView;
-    private BluetoothDevice hostDevice;
-    private BroadcastReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CardGamesApplication.setCurrentActivity(this);
-        setContentView(R.layout.activity_game_wait);
+        setContentView(R.layout.activity_game_client);
         decorView = getWindow().getDecorView();
-        //Bekomme das Intent und das übergebene Gerät aus dem UI-Handler (das übergebene Gerät ist das mit aktivem Socket)
-        Intent intent = getIntent();
-        hostDevice = intent.getParcelableExtra("device");
-        TextView waitMessage = (TextView) findViewById(R.id.waitMessage);
-        //Setzte die vom Gerätenamen abhänige Wartenachricht (bis Spielbeginn);
-        waitMessage.setText(getString(R.string.waitForGameStart,hostDevice.getName()));
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                //Gehe zurück zum Verbindungsbildschirm, wenn Verbindung getrennt wird
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.equals(hostDevice)) finish();
-            }
-        };
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(NetworkHandler.ACTION_SOCKET_CLOSED);
-        registerReceiver(receiver, filter);
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        if(receiver != null) unregisterReceiver(receiver);
     }
 
     @Override
@@ -74,7 +44,7 @@ public class GameWaitActivity extends ActionBarActivity {
     /*
         Funktion aus https://developer.android.com/training/system-ui/immersive.html
         Aktiviert den Sticky-Immersive-Mode, bei dem das System-UI nur sichtbar ist, wenn am Bildschirmrand gewischt wird
-     */
+    */
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);

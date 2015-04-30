@@ -44,7 +44,18 @@ public class UIHandler extends Handler {
     }
 
     private void handleInputPackage(Message msg) {
-        Log.d("UiThread", msg.toString());
+        Bundle data = msg.getData();
+        BluetoothPackage pkg = (BluetoothPackage) data.getSerializable("package");
+        switch(pkg.getAction()){
+            case BluetoothPackage.ACTION_START_CLIENT_GAME:
+                Activity act = CardGamesApplication.getCurrentActivity();
+                if(act == null) break;
+                Intent gameWaitIntent = new Intent(act, GameClientActivity.class);
+                gameWaitIntent.putExtra("startPackage",pkg);
+                act.startActivity(gameWaitIntent);
+                act.finish();
+                break;
+        }
     }
 
     //Gibt als Nachricht aus, ob der Server gestartet werden konnte
