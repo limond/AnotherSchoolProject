@@ -2,6 +2,7 @@ package com.mangostudio.anotherschoolproject;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,8 +22,17 @@ public class BluetoothMultiLayerConnection {
         this.socket = socket;
         this.outStream = new ObjectOutputStream(socket.getOutputStream());
         this.inStream = new ObjectInputStream(socket.getInputStream());
-        this.inputThread = new BluetoothPackageInputThread(inStream, socket.getRemoteDevice().getAddress());
+        this.inputThread = new BluetoothPackageInputThread(inStream, socket.getRemoteDevice());
         inputThread.start();
+        /*
+            Normalerweise schickt das System Broadcasts mit verbundenen Geräten, diese werden aber in Außnahmefällen
+            (z.B. Sockets werden gleich nacheinander geschlossen und geöffnet) nicht gesendet.
+            Hier wird ein Broadcast implementiert, der schneller sein soll, weil er gesendet wird, sobald der Socket öffnet.
+            Hier wird auf die InterThreadCom-Klasse verzichtet, um den Broadcast gleichzeitig mit den Systemmeldungen behandeln zu können.
+         */
+        Intent socketClosedIntent = new Intent(NetworkHandler.ACTION_SOCKET_OPENED);
+        socketClosedIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, this.socket.getRemoteDevice());
+        CardGamesApplication.getContext().sendBroadcast(socketClosedIntent);
     }
 
     public void close() throws IOException {

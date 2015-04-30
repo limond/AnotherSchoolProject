@@ -1,5 +1,7 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Message;
 
 import java.io.IOException;
@@ -14,11 +16,13 @@ import java.io.ObjectInputStream;
 public class BluetoothPackageInputThread extends Thread{
     private ObjectInputStream obInpStream;
     private String address;
+    private BluetoothDevice device;
 
-    public BluetoothPackageInputThread (ObjectInputStream obInpStream, String address) {
+    public BluetoothPackageInputThread (ObjectInputStream obInpStream, BluetoothDevice device) {
         super();
         this.obInpStream = obInpStream;
-        this.address = address;
+        this.address = device.getAddress();
+        this.device = device;
     }
 
     @Override
@@ -35,6 +39,14 @@ public class BluetoothPackageInputThread extends Thread{
             } catch (IOException e) {
                 e.printStackTrace();
                 InterThreadCom.handleSocketClosed(address);
+                /*
+                    Normalerweise schickt das System nach ca. 10 Sekunden Trennung einen Broadcast, um getrennte Geräte mitzuteilen.
+                    Hier wird ein Broadcast implementiert, der schneller sein soll, weil er gesendet wird, sobald der Socket schließt.
+                    Hier wird auf die InterThreadCom-Klasse verzichtet, um den Broadcast gleichzeitig mit den Systemmeldungen behandeln zu können.
+                 */
+                Intent socketClosedIntent = new Intent(NetworkHandler.ACTION_SOCKET_CLOSED);
+                socketClosedIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, this.device);
+                CardGamesApplication.getContext().sendBroadcast(socketClosedIntent);
                 return;
             }
         }

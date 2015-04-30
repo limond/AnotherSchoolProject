@@ -1,10 +1,13 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.app.Activity;
 import android.app.Application;
 import android.bluetooth.BluetoothServerSocket;
 import android.content.Context;
 import android.os.HandlerThread;
 import android.os.Looper;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by Leon on 09.04.2015.
@@ -15,11 +18,12 @@ public class CardGamesApplication extends Application {
     private static UIHandler uiHandler = new UIHandler(Looper.getMainLooper());
     private HandlerThread netThread;
     private static Context context;
+    private static WeakReference<Activity> currentActivity;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.context = this.getApplicationContext();
+        context = this.getApplicationContext();
         //Erstelle den Network-Thread
         netThread = new HandlerThread("NetworkThread");
         netThread.start();
@@ -37,5 +41,14 @@ public class CardGamesApplication extends Application {
 
     public static Context getContext() {
         return context;
+    }
+
+    public static void setCurrentActivity(Activity act){
+        currentActivity = new WeakReference<>(act);
+    }
+    public static Activity getCurrentActivity() throws IllegalStateException{
+        Activity act =  currentActivity.get();
+        if (act == null) throw new IllegalStateException("No reference to an activity found");
+        return act;
     }
 }

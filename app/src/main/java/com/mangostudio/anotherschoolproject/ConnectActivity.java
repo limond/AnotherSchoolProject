@@ -14,10 +14,12 @@ import android.view.MenuItem;
 
 public class ConnectActivity extends ActionBarActivity {
     public BluetoothManagement bluetooth;
+    private HostListView hostList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CardGamesApplication.setCurrentActivity(this);
         setContentView(R.layout.activity_connect);
         bluetooth = new BluetoothManagement();
         registerHostListListeners();
@@ -27,15 +29,17 @@ public class ConnectActivity extends ActionBarActivity {
     @Override
     protected void onResume(){
         super.onResume();
+        CardGamesApplication.setCurrentActivity(this);
         InterThreadCom.releaseAllSockets();
+        hostList.setEnabled(true);
     }
 
     public void registerHostListListeners(){
-        final HostListView list = (HostListView) findViewById(R.id.hostsListView);
+        hostList = (HostListView) findViewById(R.id.hostsListView);
         //Bereits bekannte Geräte werden der UI-Komponente mitgeteilt
-        list.setDevices(bluetooth.getPairedDevices());
+        hostList.setDevices(bluetooth.getPairedDevices());
         //Klickt der Nutzer auf den Listenfuß, wird eine Suche nach neuen Geräten gestartet bzw. beendet
-        list.setOnDiscoveryStatusChangeRequestListener(new OnDiscoveryStatusChangeRequestListener() {
+        hostList.setOnDiscoveryStatusChangeRequestListener(new OnDiscoveryStatusChangeRequestListener() {
             @Override
             public void onStatusChange(int status) {
                 switch (status) {
@@ -48,7 +52,7 @@ public class ConnectActivity extends ActionBarActivity {
                 }
             }
         });
-        list.setOnDeviceSelectionListener(new OnDeviceSelectionListener() {
+        hostList.setOnDeviceSelectionListener(new OnDeviceSelectionListener() {
             @Override
             public void onSelect(BluetoothDevice selectedDevice) {
                 /*
@@ -58,20 +62,21 @@ public class ConnectActivity extends ActionBarActivity {
                     Damit das System keinen  "application not responding" Dialog anzeigt, wird der Network-Thread benutzt
                  */
                 InterThreadCom.connectToDevice(selectedDevice);
+                hostList.setEnabled(false);
             }
         });
         //Werden neue Geräte gefunden, werden diese der UI-Komponente HostListView mitgeteilt
         bluetooth.setOnNewDeviceListener(new OnNewDeviceListener() {
             @Override
             public void onNewDevice(BluetoothDevice device) {
-                list.addDevice(device);
+                hostList.addDevice(device);
             }
         });
         //Wenn die BT-Suche durch das System abgebrochen wird, wird das Aussehen des Listenfußes auf "es wird nicht gesucht" gesetzt
         bluetooth.setOnDicoveryFinishedBySystemListener(new OnDiscoveryFinishedBySystemListener() {
             @Override
             public void onFinished() {
-                list.setSearchingAppereance(HostListView.DISCOVERY_STOP);
+                hostList.setSearchingAppereance(HostListView.DISCOVERY_STOP);
             }
         });
     }

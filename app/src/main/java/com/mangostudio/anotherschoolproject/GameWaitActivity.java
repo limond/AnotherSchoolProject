@@ -22,6 +22,7 @@ public class GameWaitActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CardGamesApplication.setCurrentActivity(this);
         setContentView(R.layout.activity_game_client);
         decorView = getWindow().getDecorView();
         //Bekomme das Intent und das übergebene Gerät aus dem UI-Handler (das übergebene Gerät ist das mit aktivem Socket)
@@ -35,11 +36,10 @@ public class GameWaitActivity extends ActionBarActivity {
             public void onReceive(Context context, Intent intent) {
                 //Gehe zurück zum Verbindungsbildschirm, wenn Verbindung getrennt wird
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.getAddress().equals(hostDevice.getAddress())) finish();
+                if(device.equals(hostDevice)) finish();
             }
         };
         IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         filter.addAction(NetworkHandler.ACTION_SOCKET_CLOSED);
         registerReceiver(receiver, filter);
     }

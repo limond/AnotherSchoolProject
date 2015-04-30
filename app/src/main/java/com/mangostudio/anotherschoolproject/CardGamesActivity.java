@@ -29,6 +29,7 @@ public class CardGamesActivity extends ActionBarActivity {
     protected void onResume(){
         super.onResume();
         InterThreadCom.releaseAllSockets();
+        CardGamesApplication.setCurrentActivity(this);
     }
     public void registerMainLayoutListeners(){
         final Button host = (Button) findViewById(R.id.host);

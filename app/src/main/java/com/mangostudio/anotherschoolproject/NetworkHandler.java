@@ -24,9 +24,12 @@ import java.util.UUID;
 public class NetworkHandler extends Handler {
 
     public static final String ACTION_SOCKET_CLOSED = "com.mangostudio.anotherschoolproject.socketClosed";
+    public static final String ACTION_SOCKET_OPENED = "com.mangostudio.anotherschoolproject.socketOpened";
 
     public BluetoothManagement bluetooth = new BluetoothManagement();
     private Map<String, BluetoothMultiLayerConnection> connections = new HashMap<>();
+    private BluetoothServerSocket currentServerSocket;
+
     public NetworkHandler(Looper l) {
        super(l);
     }
@@ -46,6 +49,15 @@ public class NetworkHandler extends Handler {
                 break;
             case InterThreadCom.BLUETOOTH_HANDLE_INPUT_PACKAGE:
                 handleInputPackage(msg);
+                break;
+            case InterThreadCom.BLUETOOTH_SERVER_SOCKET_OPENED:
+                handleBluetoothServerSocketOpened(msg);
+                break;
+            case InterThreadCom.BLUETOOTH_SERVER_STOP:
+                handleStopServer();
+                break;
+            case InterThreadCom.BLUETOOTH_SOCKET_OPENED:
+                handleBluetoothSocketOpened(msg);
                 break;
             case InterThreadCom.BLUETOOTH_SOCKET_CLOSED:
                 handleSocketClosed(msg);
@@ -77,7 +89,7 @@ public class NetworkHandler extends Handler {
 
     //Erstellt einen ServerSocket, um Verbindungen annehmen zu können
     private void startServer(){
-        BluetoothServerSocket serverSocket;
+        /*BluetoothServerSocket serverSocket;
         try {
             serverSocket = bluetooth.startServer();
         } catch (IOException e) {
@@ -88,17 +100,17 @@ public class NetworkHandler extends Handler {
         InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
         try {
             while (true) {
-                        /*
-                            Dieser Vorgang wird abgebrochen, indem der UI-Thread den serverSocket schließt und accept() eine Exception wirft.
-                            Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
-                         */
+                            //Dieser Vorgang wird abgebrochen, indem der UI-Thread den serverSocket schließt und accept() eine Exception wirft.
+                            //Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
                 BluetoothSocket socket = serverSocket.accept();
                 BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
                 connections.put(socket.getRemoteDevice().getAddress(),connection);
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+        BluetoothServerSocketThread serverSocketThread = new BluetoothServerSocketThread();
+        serverSocketThread.start();
     }
 
     //Gibt alle Verbindungen frei, die bisher verbunden und noch nicht freigegeben wurden
@@ -110,7 +122,6 @@ public class NetworkHandler extends Handler {
                 e.printStackTrace();
             }
         }
-        connections.clear();
     }
 
     /*
@@ -122,6 +133,31 @@ public class NetworkHandler extends Handler {
         Log.d("NetThread", msg.toString());
     }
 
+    private void handleBluetoothServerSocketOpened(Message msg) {
+        currentServerSocket = (BluetoothServerSocket) msg.obj;
+    }
+
+    private void handleStopServer() {
+        if(currentServerSocket != null) try {
+            currentServerSocket.close();
+            InterThreadCom.stopServerStatus(R.string.ServerStopSuccessfully);
+        } catch (IOException e) {
+            InterThreadCom.stopServerStatus(R.string.ServerStopFailed);
+            e.printStackTrace();
+        }
+    }
+
+    private void handleBluetoothSocketOpened(Message msg) {
+        BluetoothSocket socket = (BluetoothSocket) msg.obj;
+        try {
+            BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
+            connections.put(socket.getRemoteDevice().getAddress(),connection);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void handleSocketClosed(Message msg) {
         Bundle data = msg.getData();
         String address = data.getString("address");
@@ -129,15 +165,7 @@ public class NetworkHandler extends Handler {
         if(connection == null) return;
         BluetoothDevice remoteDevice = connection.getRemoteDevice();
         connections.remove(address);
-        /*
-            Normalerweise schickt das System nach ca. 10 Sekunden Trennung einen Broadcast, um getrennte Geräte mitzuteilen.
-            Hier wird ein Broadcast implementiert, der schneller sein soll, weil er gesendet wird, sobald der Socket schließt.
-            Hier wird auf die InterThreadCom-Klasse verzichtet, um den Broadcast gleichzeitig mit den Systemmeldungen behandeln zu können.
-         */
-        Intent socketClosedIntent = new Intent(ACTION_SOCKET_CLOSED);
-        socketClosedIntent.putExtra(BluetoothDevice.EXTRA_DEVICE, remoteDevice);
-        CardGamesApplication.getContext().sendBroadcast(socketClosedIntent);
-    }
+}
 
     //Behandelt ausgehende Pakete aus anderen Threads
     private void handleSendPackage(Message msg) {

@@ -25,8 +25,13 @@ public class InterThreadCom {
     public static final int BLUETOOTH_HANDLE_INPUT_PACKAGE = 6;
     public static final int BLUETOOTH_SOCKET_CLOSED = 7;
     public static final int BLUETOOTH_SEND_PACKAGE = 8;
+    public static final int BLUETOOTH_SOCKET_OPENED = 9;
+    public static final int BLUETOOTH_SERVER_SOCKET_OPENED = 10;
+    public static final int BLUETOOTH_SERVER_STOP = 11;
+    public static final int BLUETOOTH_SERVER_STOPPED_STATUS = 12;
 
-    public static final int GAME_START = 9;
+    public static final int GAME_START = 13;
+
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
     public static void connectToDevice(BluetoothDevice selectedDevice) {
@@ -65,14 +70,13 @@ public class InterThreadCom {
         netHandler.sendMessage(msg);
     }
 
-    public static void updateServerStatus(int status, BluetoothServerSocket serverSocket) {
+    public static void updateServerStatus(int status) {
         Handler uiHandler = CardGamesApplication.getUIHandler();
         Message msg = uiHandler.obtainMessage();
         msg.what = BLUETOOTH_SERVER_STATUS_RESPONSE;
         Bundle data = new Bundle();
         data.putInt("status", status);
         msg.setData(data);
-        msg.obj = serverSocket;
         uiHandler.sendMessage(msg);
     }
 
@@ -97,6 +101,29 @@ public class InterThreadCom {
         handler.sendMessage(msg);
     }
 
+    public static void handleServerSocketOpened(BluetoothServerSocket serverSocket) {
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_SERVER_SOCKET_OPENED;
+        msg.obj = serverSocket;
+        netHandler.sendMessage(msg);
+    }
+
+    public static void stopServer() {
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_SERVER_STOP;
+        netHandler.sendMessage(msg);
+    }
+
+    public static void handleSocketOpened(BluetoothSocket socket) {
+        Handler netHandler = CardGamesApplication.getNetworkHandler();
+        Message msg = netHandler.obtainMessage();
+        msg.what = BLUETOOTH_SOCKET_OPENED;
+        msg.obj = socket;
+        netHandler.sendMessage(msg);
+    }
+
     public static void handleSocketClosed(String address) {
         Handler netHandler = CardGamesApplication.getNetworkHandler();
         Message msg = netHandler.obtainMessage();
@@ -116,7 +143,7 @@ public class InterThreadCom {
         Message msg = netHandler.obtainMessage();
         msg.what = BLUETOOTH_SEND_PACKAGE;
         Bundle data = new Bundle();
-        data.putBoolean("broadcast",true);
+        data.putBoolean("broadcast", true);
         msg.obj = pkg;
         msg.setData(data);
         netHandler.sendMessage(msg);
@@ -140,5 +167,15 @@ public class InterThreadCom {
         Message msg = netHandler.obtainMessage();
         msg.what = GAME_START;
         netHandler.sendMessage(msg);
+    }
+
+    public static void stopServerStatus(int code){
+        Handler uiHandler = CardGamesApplication.getUIHandler();
+        Message msg = uiHandler.obtainMessage();
+        msg.what = BLUETOOTH_SERVER_STOPPED_STATUS;
+        Bundle data = new Bundle();
+        data.putInt("status", code);
+        msg.setData(data);
+        uiHandler.sendMessage(msg);
     }
 }

@@ -4,14 +4,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class GameHostActivity extends ActionBarActivity {
+    private View decorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CardGamesApplication.setCurrentActivity(this);
         setContentView(R.layout.activity_game_host);
+        decorView = getWindow().getDecorView();
         InterThreadCom.startGame();
     }
 
@@ -35,5 +39,23 @@ public class GameHostActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+    Funktion aus https://developer.android.com/training/system-ui/immersive.html
+    Aktiviert den Sticky-Immersive-Mode, bei dem das System-UI nur sichtbar ist, wenn am Bildschirmrand gewischt wird
+ */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 }

@@ -32,6 +32,7 @@ public class CreateServerActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CardGamesApplication.setCurrentActivity(this);
         InterThreadCom.releaseAllSockets();
         setContentView(R.layout.activity_create_server);
         bluetooth = new BluetoothManagement();
@@ -42,13 +43,15 @@ public class CreateServerActivity extends ActionBarActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        ((CardGamesApplication)getApplication()).getUIHandler().stopServer();
+        //((CardGamesApplication)getApplication()).getUIHandler().stopServer();
+        InterThreadCom.stopServer();
         if(receiver != null) unregisterReceiver(receiver);
     }
 
     @Override
     protected void onRestart(){
         super.onRestart();
+        CardGamesApplication.setCurrentActivity(this);
         InterThreadCom.releaseAllSockets();
         connectedDevices.clear();
         updateList();
@@ -92,13 +95,12 @@ public class CreateServerActivity extends ActionBarActivity {
                         toggleDiscoverable.setEnabled(true);
                     }
                 }
-                //Wenn ein Gerät verbunden wurde, benachrichtigt Android das UI
-                else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
+                else if(intent.getAction().equals(NetworkHandler.ACTION_SOCKET_OPENED)){
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     connectedDevices.add(device);
                     updateList();
                 }
-                else if(intent.getAction().equals(BluetoothDevice.ACTION_ACL_DISCONNECTED)){
+                else if(intent.getAction().equals(NetworkHandler.ACTION_SOCKET_CLOSED)){
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     connectedDevices.remove(device);
                     updateList();
@@ -107,8 +109,9 @@ public class CreateServerActivity extends ActionBarActivity {
         };
         filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        filter.addAction(NetworkHandler.ACTION_SOCKET_OPENED);
+        filter.addAction(NetworkHandler.ACTION_SOCKET_CLOSED);
+
         registerReceiver(receiver, filter);
 
         InterThreadCom.startServer();
