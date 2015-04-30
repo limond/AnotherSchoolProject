@@ -43,7 +43,6 @@ public class CreateServerActivity extends ActionBarActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        //((CardGamesApplication)getApplication()).getUIHandler().stopServer();
         InterThreadCom.stopServer();
         if(receiver != null) unregisterReceiver(receiver);
     }

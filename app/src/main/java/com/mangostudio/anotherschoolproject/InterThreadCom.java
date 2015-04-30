@@ -116,6 +116,17 @@ public class InterThreadCom {
         netHandler.sendMessage(msg);
     }
 
+
+    public static void stopServerStatus(int code){
+        Handler uiHandler = CardGamesApplication.getUIHandler();
+        Message msg = uiHandler.obtainMessage();
+        msg.what = BLUETOOTH_SERVER_STOPPED_STATUS;
+        Bundle data = new Bundle();
+        data.putInt("status", code);
+        msg.setData(data);
+        uiHandler.sendMessage(msg);
+    }
+
     public static void handleSocketOpened(BluetoothSocket socket) {
         Handler netHandler = CardGamesApplication.getNetworkHandler();
         Message msg = netHandler.obtainMessage();
@@ -167,15 +178,5 @@ public class InterThreadCom {
         Message msg = netHandler.obtainMessage();
         msg.what = GAME_START;
         netHandler.sendMessage(msg);
-    }
-
-    public static void stopServerStatus(int code){
-        Handler uiHandler = CardGamesApplication.getUIHandler();
-        Message msg = uiHandler.obtainMessage();
-        msg.what = BLUETOOTH_SERVER_STOPPED_STATUS;
-        Bundle data = new Bundle();
-        data.putInt("status", code);
-        msg.setData(data);
-        uiHandler.sendMessage(msg);
     }
 }

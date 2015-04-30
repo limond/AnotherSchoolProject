@@ -69,11 +69,10 @@ public class UIHandler extends Handler {
                 break;
             case BluetoothManagement.CONNECTION_SUCCESSFULL:
                 //Oeffne die GameWaitActivity und uebergib das Geraet mit aktivem Socket
-                Context ctx = CardGamesApplication.getContext();
+                Context ctx = CardGamesApplication.getCurrentActivity();
+                if(ctx == null) break;
                 Intent gameWaitIntent = new Intent(ctx, GameWaitActivity.class);
                 gameWaitIntent.putExtra("device",(BluetoothDevice) data.getParcelable("device"));
-                //Ermoeglicht das Oeffnen von Activities aussserhalb des Activity-Kontextes
-                gameWaitIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ctx.startActivity(gameWaitIntent);
                 break;
         }

@@ -163,7 +163,6 @@ public class NetworkHandler extends Handler {
         String address = data.getString("address");
         BluetoothMultiLayerConnection connection =  connections.get(address);
         if(connection == null) return;
-        BluetoothDevice remoteDevice = connection.getRemoteDevice();
         connections.remove(address);
 }
 
