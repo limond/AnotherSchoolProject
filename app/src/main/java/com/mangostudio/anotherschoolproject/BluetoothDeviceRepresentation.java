@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class BluetoothDeviceRepresentation implements Serializable{
     /*
         Eine minimalistische Klasse, die die Informationen Adresse und Name eines Bluetooth-Gerätes bündelt
-        und serialisierbar ist
+        und serialisierbar ist, um eine Alternative zur BluetoothDevice Klasse zu haben, wenn man Gerätelisten übertragen möchte
      */
     public String name;
     public String address;

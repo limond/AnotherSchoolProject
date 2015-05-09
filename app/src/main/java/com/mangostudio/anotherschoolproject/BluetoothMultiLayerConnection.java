@@ -13,6 +13,9 @@ import java.io.ObjectOutputStream;
  * Created by Leon on 21.04.2015.
  */
 public class BluetoothMultiLayerConnection {
+    /*
+        Verbindet die vergleichsweise primitiven Streams des Sockets mit ObjectStreams, die ganze Objekte übertragen können
+     */
     private BluetoothSocket socket;
     private ObjectInputStream inStream;
     private ObjectOutputStream outStream;
@@ -27,7 +30,7 @@ public class BluetoothMultiLayerConnection {
         /*
             Normalerweise schickt das System Broadcasts mit verbundenen Geräten, diese werden aber in Außnahmefällen
             (z.B. Sockets werden gleich nacheinander geschlossen und geöffnet) nicht gesendet.
-            Hier wird ein Broadcast implementiert, der schneller sein soll, weil er gesendet wird, sobald der Socket öffnet.
+            Hier wird ein Broadcast implementiert, der schneller sein soll, weil er gesendet wird, sobald der Socket öffnet und die Streams funktionieren.
             Hier wird auf die InterThreadCom-Klasse verzichtet, um den Broadcast gleichzeitig mit den Systemmeldungen behandeln zu können.
          */
         Intent socketClosedIntent = new Intent(NetworkHandler.ACTION_SOCKET_OPENED);

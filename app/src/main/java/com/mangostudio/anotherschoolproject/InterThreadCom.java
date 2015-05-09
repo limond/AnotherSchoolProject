@@ -17,6 +17,14 @@ import java.util.Set;
  * Created by Leon on 03.04.2015.
  */
 public class InterThreadCom {
+
+    /*
+    Die ganze Klasse bietet nur statische Methoden an, die Nachrichten zwischen den Threads schicken.
+    Den Nachrichten kann ein Daten-Bündel beigelegt werden und/oder ein konkretes Objekt.
+    Jede Nachricht hat eine Identifikationsnummer (msg.what), die gebraucht wird, um in den Handlern die Nachricht Funktionen zuzuordnen.
+    Die einzelnen Methoden werden nicht genau erklärt (größtenteils selbsterklärend), stattdessen findet man im jeweiligen Handler die Erklärung, was die Nachricht auslöst.
+    */
+
     public static final int BLUETOOTH_CONNECTION_START_REQUEST = 1;
     public static final int BLUETOOTH_CONNECTION_START_RESPONSE = 2;
     public static final int BLUETOOTH_SERVER_START_REQUEST = 3;
@@ -31,7 +39,6 @@ public class InterThreadCom {
     public static final int BLUETOOTH_SERVER_STOPPED_STATUS = 12;
 
     public static final int GAME_START = 13;
-
 
     //Nachricht an den NetThread, dass eine Verbindung zu einem Gerät aufgebaut werden soll
     public static void connectToDevice(BluetoothDevice selectedDevice) {
@@ -80,13 +87,14 @@ public class InterThreadCom {
         uiHandler.sendMessage(msg);
     }
 
+    //Je nachdem, ob ein Paket für den NetworkHandler oder den UIHandler bestimmt ist, wird es zum entsprechenden Handler geschickt
     public static void handleInputPackage(BluetoothPackage btPackage, String source){
         Handler handler;
         switch(btPackage.getDestination()){
             case BluetoothPackage.HANDLER_DESTINATION_NETWORK:
                 handler = CardGamesApplication.getNetworkHandler();
                 break;
-            //Fall-Through (nur aus Verständlichkeitsgründen)
+            //Fall-Through (nur aus Verständlichkeitsgründen, da der UI-Thread auch der default-Thread zum Bearbeiten von Paketen ist)
             case BluetoothPackage.HANDLER_DESTINATION_UI:
             default:
                 handler = CardGamesApplication.getUIHandler();
@@ -146,7 +154,7 @@ public class InterThreadCom {
     }
 
     /*
-        Die folgenden Methoden ermöglichen es aus anderen Threads Pakete an andere geräte zu schicken
+        Die folgenden Methoden ermöglichen es aus anderen Threads Pakete an andere Geräte zu schicken
      */
     public static void sendPackageBroadcast(BluetoothPackage pkg) {
         //untested

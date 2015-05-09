@@ -28,7 +28,6 @@ public class BluetoothPackageInputThread extends Thread{
     @Override
     public void run(){
         super.run();
-
         //Schicke solange Nachrichten an den netHandler, bis der Thread unterbrochen wird
         while (true){
             try {

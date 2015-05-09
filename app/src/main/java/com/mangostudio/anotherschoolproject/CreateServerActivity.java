@@ -20,14 +20,20 @@ import java.util.ArrayList;
 
 
 public class CreateServerActivity extends ActionBarActivity {
+    /*
+        Die Activity öffnet den ServerSocket (indirekt über den NetzwerkThread) un lässt Verbindungen zu.
+        Außerdem lässt sich das Gerät für andere sichtbar schalten.
+     */
     private BluetoothManagement bluetooth;
-    private NetworkHandler netHandler;
     BroadcastReceiver receiver;
     public ArrayList<String> connectedList = new ArrayList<>();
     public ArrayAdapter<String> arrAdapter;
     private ArrayList<BluetoothDevice> connectedDevices = new ArrayList<>();
     private MenuItem startGameButton;
     private IntentFilter filter;
+    private TextView btname;
+    private Button toggleDiscoverable;
+    private ListView connectedListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +42,6 @@ public class CreateServerActivity extends ActionBarActivity {
         InterThreadCom.releaseAllSockets();
         setContentView(R.layout.activity_create_server);
         bluetooth = new BluetoothManagement();
-        netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
         registerCreateServerListeners();
     }
 
@@ -56,17 +61,20 @@ public class CreateServerActivity extends ActionBarActivity {
         updateList();
         InterThreadCom.startServer();
         if(receiver != null) registerReceiver(receiver, filter);
+        setDiscoverAppearance(bluetooth.isDiscoverable());
     }
 
 
     public void registerCreateServerListeners(){
-        final TextView btname = (TextView) findViewById(R.id.btname);
-        final Button toggleDiscoverable = (Button) findViewById(R.id.toggleDiscoverable);
-        final ListView connectedListView =(ListView) findViewById(R.id.connectedList);
+        btname = (TextView) findViewById(R.id.btname);
+        toggleDiscoverable = (Button) findViewById(R.id.toggleDiscoverable);
+        connectedListView = (ListView) findViewById(R.id.connectedList);
+        //analog wie in der HostListView wird der ArrayAdapter verwendet
         arrAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, connectedList);
         connectedListView.setAdapter(arrAdapter);
 
         btname.setText(bluetooth.getName());
+        setDiscoverAppearance(bluetooth.isDiscoverable());
         toggleDiscoverable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,21 +87,16 @@ public class CreateServerActivity extends ActionBarActivity {
                 startActivity(discoverableIntent);
             }
         });
+        //Gegistriert einen BroadcastReceiver, um System-Broadcasts zu empfangen
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //Ändert den Button, je nachdem, ob das Gerät tatsächlich sichtbar ist oder nicht
-                if(intent.getAction().equals("ACTION_SCAN_MODE_CHANGED")) {
+                if(intent.getAction().equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
                     int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.SCAN_MODE_NONE);
-                    if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                        toggleDiscoverable.setText(R.string.discoverable);
-                        toggleDiscoverable.setEnabled(false);
-                    }
-                    else {
-                        toggleDiscoverable.setText(R.string.makeDiscoverable);
-                        toggleDiscoverable.setEnabled(true);
-                    }
+                    setDiscoverAppearance(mode==BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE);
                 }
+                //Update die Liste mit Verbundenen Geräten, wenn ein Gerät sich verbindet/getrennt wird
                 else if(intent.getAction().equals(NetworkHandler.ACTION_SOCKET_OPENED)){
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     connectedDevices.add(device);
@@ -106,6 +109,7 @@ public class CreateServerActivity extends ActionBarActivity {
                 }
             }
         };
+        //Beschränke den BroadcastReceiver auf bestimmte Aktionen
         filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         filter.addAction(NetworkHandler.ACTION_SOCKET_OPENED);
@@ -116,11 +120,24 @@ public class CreateServerActivity extends ActionBarActivity {
         InterThreadCom.startServer();
     }
 
+
+    private void setDiscoverAppearance(boolean discoverable){
+        if(discoverable) {
+            toggleDiscoverable.setText(R.string.discoverable);
+            toggleDiscoverable.setEnabled(false);
+        }
+        else {
+            toggleDiscoverable.setText(R.string.makeDiscoverable);
+            toggleDiscoverable.setEnabled(true);
+        }
+    }
+
     private void updateList() {
         arrAdapter.clear();
         for(BluetoothDevice device : connectedDevices){
             arrAdapter.add(device.getName());
         }
+        //Je nachdem, ob ein Gerät verbunden ist, lässt sich das Spiel starten/nicht starten.
         if(arrAdapter.getCount()>0){
             startGameButton.setEnabled(true);
         }
@@ -130,6 +147,7 @@ public class CreateServerActivity extends ActionBarActivity {
         arrAdapter.notifyDataSetChanged();
     }
 
+    // Die folgenden Methoden werden automatisch Generiert... Der Button R.id.action_start_game ist allerding selbst implementiert, er startet das Spiel
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -10,6 +10,15 @@ import java.util.HashMap;
  * Created by Leon on 19.04.2015.
  */
 public class BluetoothPackage implements Serializable {
+
+    /*
+        Das eigentlich zu übertragene Paket.
+        Es wird ein Ziel in Form eines Handlers angegeben. Das bestimmt, ob das Paket im UI-Thread oder im Netzwerk-Thread behandelt wird.
+        Es wird keine Zieladresse angegeben. Ein Paket kann an eine beliebige Adresse geschickt werden.
+        Ähnlich zu message.what in der InterThreadCom, gibt es Actions die bestimmen, wofür das Paket gedacht ist.
+        An das Paket kann, ähnlich zu Messages und Bundles, eine HashMap mit serialisierbaren Objekten angehängt werden.
+     */
+
     public static final int HANDLER_DESTINATION_UI = 1;
     public static final int HANDLER_DESTINATION_NETWORK = 2;
 

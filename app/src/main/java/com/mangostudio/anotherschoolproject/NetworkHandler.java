@@ -71,7 +71,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
-    //Baut einen Socket zum Host auf
+    //Baut einen Verbindung zum Host auf
     private void connectionStart(Message msg){
         Bundle data = msg.getData();
         BluetoothDevice device = data.getParcelable("device");
@@ -87,28 +87,8 @@ public class NetworkHandler extends Handler {
         }
     }
 
-    //Erstellt einen ServerSocket, um Verbindungen annehmen zu können
+    //Erstellt einen BluetoothServerSocketThread, um Verbindungen annehmen zu können
     private void startServer(){
-        /*BluetoothServerSocket serverSocket;
-        try {
-            serverSocket = bluetooth.startServer();
-        } catch (IOException e) {
-            e.printStackTrace();
-            InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_FAILED, null);
-            return;
-        }
-        InterThreadCom.updateServerStatus(BluetoothManagement.SERVER_CREATION_SUCCESSFULL, serverSocket);
-        try {
-            while (true) {
-                            //Dieser Vorgang wird abgebrochen, indem der UI-Thread den serverSocket schließt und accept() eine Exception wirft.
-                            //Dieses Vorgehen ist üblich, da accept nicht auf interrupts reagiert
-                BluetoothSocket socket = serverSocket.accept();
-                BluetoothMultiLayerConnection connection = new BluetoothMultiLayerConnection(socket);
-                connections.put(socket.getRemoteDevice().getAddress(),connection);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         BluetoothServerSocketThread serverSocketThread = new BluetoothServerSocketThread();
         serverSocketThread.start();
     }
@@ -126,8 +106,7 @@ public class NetworkHandler extends Handler {
 
     /*
         Die Funktion behandelt Nachrichten der Verbindungspartner
-        ACHTUNG: Solange der Server neue Verbindungen akzeptiert kann der Handler keine Messages aus der MessageQueue verarbeiten
-        Nachrichten können in dieser Zeit stattdessen an den UiHandler geschickt werden
+        Bisher werden Nachrichten nur geloggt.
      */
     private void handleInputPackage(Message msg) {
         Log.d("NetThread", msg.toString());
@@ -137,6 +116,7 @@ public class NetworkHandler extends Handler {
         currentServerSocket = (BluetoothServerSocket) msg.obj;
     }
 
+    //Stoppt den BluetooothServerSocketThread indirekt, indem der BluetoothServerSocket geschlossen wird, was die while-Schleife im Thread unterbricht
     private void handleStopServer() {
         if(currentServerSocket != null) try {
             currentServerSocket.close();
@@ -147,6 +127,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
+    //Füge eine neue Verbindung zur Liste hinzu
     private void handleBluetoothSocketOpened(Message msg) {
         BluetoothSocket socket = (BluetoothSocket) msg.obj;
         try {
@@ -158,6 +139,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
+    //Entferne eine Verbindung aus der Liste
     private void handleSocketClosed(Message msg) {
         Bundle data = msg.getData();
         String address = data.getString("address");
@@ -166,7 +148,7 @@ public class NetworkHandler extends Handler {
         connections.remove(address);
 }
 
-    //Behandelt ausgehende Pakete aus anderen Threads
+    //Behandelt ausgehende Bluetooth-Pakete aus anderen Threads
     private void handleSendPackage(Message msg) {
         Bundle data = msg.getData();
         if(data.getBoolean("broadcast")){
@@ -177,7 +159,7 @@ public class NetworkHandler extends Handler {
         }
     }
 
-    //Sendet ein Paket, nachdem die Adresse aufgelöst wurde
+    //Sendet ein Paket, nachdem die Adresse "aufgelöst" wurde
     private void sendPackage(BluetoothPackage pkg, String address){
         BluetoothMultiLayerConnection connection = connections.get(address);
         if (connection != null) sendPackage(pkg, connection);

@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 
 public class CardGamesActivity extends ActionBarActivity {
+    /*
+        Activity ganz am Anfang: Zwei Buttons, die Entscheiden, ob Host oder Client
+     */
     public BluetoothManagement bluetooth;
 
     public static final int INTENT_ENABLE_BLUETOOTH = 1;
@@ -35,6 +38,7 @@ public class CardGamesActivity extends ActionBarActivity {
         final Button host = (Button) findViewById(R.id.host);
         final Button connect = (Button) findViewById(R.id.connect);
 
+        //Wird auf "Host" geklickt, wird die CreateServerActivity gestartet
         View.OnClickListener hostListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,7 +47,7 @@ public class CardGamesActivity extends ActionBarActivity {
             }
         };
         host.setOnClickListener(hostListener);
-        //Wird auf "connect" geklickt, wechselt das layout zur Liste mit BT-Geräten
+        //Wird auf "connect" geklickt, wird die ConnectActivity gestartet
         View.OnClickListener connectListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,31 +58,6 @@ public class CardGamesActivity extends ActionBarActivity {
         connect.setOnClickListener(connectListener);
     }
 
-    /*
-        Die folgenden zwei Funktionen sind automatisch generiert und behandeln das Menü, das mit der Menü-Taste aufgerufen wird
-        Wird dieses Menü nicht gebracht, kann man die Funktionen in der Zukunft löschen
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_card_games, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
     @Override
     public void onBackPressed() {
         //Bringe die App in den Hintergrund (App schließt sich, ohne dass der Prozess sofort beendet wird)
@@ -86,7 +65,7 @@ public class CardGamesActivity extends ActionBarActivity {
     }
 
     @Override
-    //Von der App (eigentlich der Activity) gestartete Apps (eigentlich Activities) berichten ihr Ergebnis
+    //Von der Activity gestartete Activities berichten ihr Ergebnis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){

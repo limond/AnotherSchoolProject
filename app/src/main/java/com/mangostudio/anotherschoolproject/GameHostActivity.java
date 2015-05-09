@@ -8,6 +8,11 @@ import android.view.View;
 
 
 public class GameHostActivity extends ActionBarActivity {
+
+    /*
+        Hier ist der Ort, wo zum ersten Mal das eigentliche Spiel für den Host beginnt
+     */
+
     private View decorView;
 
     @Override

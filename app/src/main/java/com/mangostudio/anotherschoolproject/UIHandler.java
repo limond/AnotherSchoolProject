@@ -19,10 +19,16 @@ import java.io.IOException;
  * Created by Leon on 03.04.2015.
  */
 public class UIHandler extends Handler {
+
+    /*
+        Der UIHandler bearbeitet die Nachrichten aus der MessegeQueue des Main-Threads
+     */
+
     public UIHandler(Looper l) {
         super(l);
     }
 
+    //Je nachdem, um was in der Nachricht aus der InterThreadCom geht, wird das Paket entsprechend behandelt
     @Override
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
@@ -39,15 +45,16 @@ public class UIHandler extends Handler {
             case InterThreadCom.BLUETOOTH_SERVER_STOPPED_STATUS:
                 handleStopServerStatus(msg);
                 break;
-            //case InterThreadCom.
         }
     }
 
+    //Behandelt BluetoothPackeges, nachdem sie von der InterThreadCom zum UIThread geschickt wurden
     private void handleInputPackage(Message msg) {
         Bundle data = msg.getData();
         BluetoothPackage pkg = (BluetoothPackage) data.getSerializable("package");
         switch(pkg.getAction()){
             case BluetoothPackage.ACTION_START_CLIENT_GAME:
+                //Die eigentliche Spiel-Activity wird gestartet und das Paket (mit der Liste verbundener Geräte) übergeben
                 Activity act = CardGamesApplication.getCurrentActivity();
                 if(act == null) break;
                 Intent gameWaitIntent = new Intent(act, GameClientActivity.class);

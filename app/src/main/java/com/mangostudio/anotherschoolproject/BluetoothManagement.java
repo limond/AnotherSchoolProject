@@ -18,6 +18,9 @@ import java.util.UUID;
  * Created by Leon on 04.04.2015.
  */
 public class BluetoothManagement {
+    /*
+        Stellt einige Methoden zur Bluetooth-Verwaltung bereit
+     */
 
     public static final int BLUETOOTH_NOT_PRESENT = 0;
     public static final int BLUETOOTH_NOT_ENABLED = 1;
@@ -31,8 +34,8 @@ public class BluetoothManagement {
 
 
     public BluetoothAdapter adapter;
-    private boolean isDiscovering = false;
     private BroadcastReceiver receiver;
+    private boolean receiverRegistered = false;
     private OnNewDeviceListener newDeviceListener;
     private OnDiscoveryFinishedBySystemListener discoveryFinishedListener;
 
@@ -64,6 +67,7 @@ public class BluetoothManagement {
             case BLUETOOTH_NOT_ENABLED:
                 //Fragt beim System an, den BT-Adapter-Dialog anzuzeigen (onActivityResult empfängt das Resultat)
                 act.startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), CardGamesActivity.INTENT_ENABLE_BLUETOOTH);
+                //Das Ergebnis muss von der onActivityResult-Methode in der Activity act behandelt werden.
                 break;
         }
     }
@@ -90,15 +94,14 @@ public class BluetoothManagement {
                 else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
                     //Discovery wurde vom System beendet (Triggert den Listener für das Beenden der Suche durch das System)
                     if(discoveryFinishedListener != null) discoveryFinishedListener.onFinished();
-                    isDiscovering = false;
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        isDiscovering = true;
         ctx.registerReceiver(receiver, filter);
+        receiverRegistered = true;
         //Startet die eigentliche Suche
         adapter.startDiscovery();
     }
@@ -113,14 +116,20 @@ public class BluetoothManagement {
 
     //Offensichtlich: Gibt an, ob gerade nach Geräten gesucht wird
     public Boolean isDiscovering(){
-        return this.isDiscovering;
+        return adapter.isDiscovering();
+    }
+
+    public Boolean isDiscoverable(){
+        return  adapter.getScanMode() == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE;
     }
 
     //Beendet die Geräte-Suche vor ihrer Beendung durch das System
     public void cancelDiscovery(Context ctx){
         adapter.cancelDiscovery();
-        ctx.unregisterReceiver(receiver);
-        isDiscovering = false;
+        if(receiverRegistered){
+            ctx.unregisterReceiver(receiver);
+            receiverRegistered = false;
+        }
     }
 
     //Name des eigenen Adapters

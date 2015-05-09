@@ -13,6 +13,9 @@ import android.view.MenuItem;
 
 
 public class ConnectActivity extends ActionBarActivity {
+    /*
+        Die Activity bietet an sich mit einem bekannten oder neu gefundenen Gerät zu verbinden
+     */
     public BluetoothManagement bluetooth;
     private HostListView hostList;
 
@@ -62,6 +65,7 @@ public class ConnectActivity extends ActionBarActivity {
                     Damit das System keinen  "application not responding" Dialog anzeigt, wird der Network-Thread benutzt
                  */
                 InterThreadCom.connectToDevice(selectedDevice);
+                //Die View wird gesperrt, damit nicht mehrere Verbindungsversuche unternommen werden können
                 hostList.setEnabled(false);
             }
         });
@@ -79,28 +83,6 @@ public class ConnectActivity extends ActionBarActivity {
                 hostList.setSearchingAppereance(HostListView.DISCOVERY_STOP);
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_connect, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     protected void onStop(){

@@ -14,6 +14,11 @@ import android.widget.TextView;
 
 
 public class GameWaitActivity extends ActionBarActivity {
+
+    /*
+        Das Spiel hat noch nicht begonnen, es wird darauf gewartet, das der Host das Spiel beginnt
+     */
+
     private View decorView;
     private BluetoothDevice hostDevice;
     private BroadcastReceiver receiver;

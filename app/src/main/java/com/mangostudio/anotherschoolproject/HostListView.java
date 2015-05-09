@@ -22,27 +22,34 @@ import java.util.Set;
  * Created by Leon on 02.04.2015.
  */
 public class HostListView extends ListView {
+    /*
+        Die HostListView stellt eine Liste von Geräten dar, wobei am Fuß der Liste, immer ein Eintrag zum Suchen neuer Geräte ist.
+        Es gibt zwei Listeners, die von außen gehört werden können:
+        der OnDiscoveryStatusChangeRequestListener wird aufgerufen, sobald die Suche nach neuen Geräten gestartet/beendet werden soll
+        der OnDeviceSelectionListener wird aufgerufen, sobald ein Gerät aus der Liste ausgewählt wurde
+     */
     public final static int DISCOVERY_START = 0;
     public final static int DISCOVERY_STOP = 1;
 
-    public ArrayList<String> HostList = new ArrayList<>();
-    public ArrayAdapter<String> arrAdapter;
-    public boolean isSearching = false;
-    public OnDiscoveryStatusChangeRequestListener statusListener;
-    public LinkedHashSet<BluetoothDevice> devices;
+    private ArrayList<String> HostList = new ArrayList<>();
+    private ArrayAdapter<String> arrAdapter;
+    private boolean isSearching = false;
+    private OnDiscoveryStatusChangeRequestListener statusListener;
+    private OnDeviceSelectionListener selectListener;
+    private LinkedHashSet<BluetoothDevice> devices;
 
     private final TextView status;
     private final ProgressBar progressSpinner;
-    private OnDeviceSelectionListener selectListener;
 
     public HostListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         devices = new LinkedHashSet<>();
+        //Der arrAdapter erzeugt für jeden Eintrag in HostList eine View android.R.layout.simple_list_item_1, die nur eine TextView beinhaltet
         arrAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, HostList);
         this.setAdapter(arrAdapter);
         /*
             Die folgenden 2 Zeilen stammen aus http://stackoverflow.com/questions/4265228/how-to-add-a-footer-in-listview
-            Sie fügen an die Liste einen Footer an (Eintrag der die Suche nach neuen Geräten erlaubt)
+            Sie fügen an die Liste einen Footer an (Eintrag, der die Suche nach neuen Geräten erlaubt)
         */
         final View footerView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.hosts_list_footer, null, false);
         this.addFooterView(footerView);
@@ -71,7 +78,6 @@ public class HostListView extends ListView {
                     //ein Gerät wurde angeklickt
                     /*
                         Im folgenden wird über das LinkedHashSet "devices" iteriert, um das ausgewählte zu finden
-                        Entweder hier oder beim Hinzufügen eines Sets zu einer ArrayList hätte sowieso iteriert werden müssen...
                      */
                     Iterator<BluetoothDevice> it = devices.iterator();
                     BluetoothDevice selectedDevice = it.next();
@@ -105,13 +111,13 @@ public class HostListView extends ListView {
         this.selectListener = selectListener;
     }
 
-    //Setzt die Liste der Geräte
+    //Setzt die Liste der Geräte / updated das UI
     public void setDevices(Set<BluetoothDevice> devices){
         this.devices.clear();
         this.devices.addAll(devices);
         updateListView();
     }
-    //Fügt ein Gerät zur Liste hinzu (,wenn es noch nicht vorhanden ist)
+    //Fügt ein Gerät zur Liste hinzu (, wenn es noch nicht vorhanden ist)
     public void addDevice(BluetoothDevice device){
         this.devices.add(device);
         updateListView();
@@ -119,7 +125,7 @@ public class HostListView extends ListView {
     //Füllt die UI-Komponente mit den neuen Einträgen
     private void updateListView(){
         HostList.clear();
-        for (BluetoothDevice device : devices.toArray(new BluetoothDevice[devices.size()])) {
+        for (BluetoothDevice device : devices) {
             String name = device.getName();
             //Wenn Android noch nicht den Namen vom Gerät erfahren hat, wird stattdessen die Hardware-Adresse benutzt
             if(name == null) name = device.getAddress();

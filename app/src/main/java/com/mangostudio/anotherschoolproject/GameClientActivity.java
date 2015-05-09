@@ -9,6 +9,10 @@ import android.view.View;
 
 public class GameClientActivity extends ActionBarActivity {
 
+    /*
+        Hier ist der Ort, wo zum ersten Mal das eigentliche Spiel für den Client beginnt
+     */
+
     private View decorView;
 
     @Override
