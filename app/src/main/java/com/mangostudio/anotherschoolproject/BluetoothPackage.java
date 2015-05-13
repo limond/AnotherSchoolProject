@@ -14,12 +14,14 @@ public class BluetoothPackage implements Serializable {
     public static final int HANDLER_DESTINATION_NETWORK = 2;
 
     public static final int ACTION_START_CLIENT_GAME = 1;
+    public static final int ACTION_GIVE_CLIENT_CARD = 2;
+    public static final int ACTION_GIVE_HOST_CARD = 3;
 
     public int destination;
     public int action;
     public HashMap<String, Object> additionalData;
 
-    BluetoothPackage(int destination, int action){
+    public BluetoothPackage(int destination, int action){
         //legt fest, von welchem Handler das Paket behandelt werden soll
         this.destination = destination;
         //legt die Aktion fest, die beim Ausführen passieren soll.

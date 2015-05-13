@@ -1,10 +1,15 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.bluetooth.BluetoothDevice;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.mangostudio.anotherschoolproject.frontend.HostGameView;
+
+import java.util.ArrayList;
 
 
 public class GameHostActivity extends ActionBarActivity {
@@ -16,6 +21,9 @@ public class GameHostActivity extends ActionBarActivity {
         CardGamesApplication.setCurrentActivity(this);
         setContentView(R.layout.activity_game_host);
         decorView = getWindow().getDecorView();
+        HostGameView view = (HostGameView) findViewById(R.id.game_view);
+        ArrayList<BluetoothDevice> devices = getIntent().getExtras().getParcelableArrayList("connectedDevices");
+        view.getTable().setConnectedDevices(devices);
         InterThreadCom.startGame();
     }
 

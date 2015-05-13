@@ -13,6 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.mangostudio.anotherschoolproject.frontend.ClientGameView;
+import com.mangostudio.anotherschoolproject.frontend.HostGameView;
+import com.mangostudio.anotherschoolproject.frontend.logic.Card;
+
 import java.io.IOException;
 
 /**
@@ -46,15 +50,36 @@ public class UIHandler extends Handler {
     private void handleInputPackage(Message msg) {
         Bundle data = msg.getData();
         BluetoothPackage pkg = (BluetoothPackage) data.getSerializable("package");
+        Activity act = CardGamesApplication.getCurrentActivity();
         switch(pkg.getAction()){
             case BluetoothPackage.ACTION_START_CLIENT_GAME:
-                Activity act = CardGamesApplication.getCurrentActivity();
                 if(act == null) break;
                 Intent gameWaitIntent = new Intent(act, GameClientActivity.class);
                 gameWaitIntent.putExtra("startPackage",pkg);
                 act.startActivity(gameWaitIntent);
                 act.finish();
                 break;
+            case BluetoothPackage.ACTION_GIVE_CLIENT_CARD:
+                if (act == null) break;
+                View v = act.findViewById(R.id.game_view);
+                Object obj = pkg.additionalData.get("card");
+                if (obj != null && obj instanceof Card && v instanceof ClientGameView) {
+                    ClientGameView gameView = (ClientGameView) v;
+                    Card card = (Card) obj;
+                    gameView.addCard(card);
+                    gameView.repaint();
+                }
+                break;
+            case BluetoothPackage.ACTION_GIVE_HOST_CARD:
+                if (act == null) break;
+                View v1 = act.findViewById(R.id.game_view);
+                Object obj1 = pkg.additionalData.get("card");
+                if (obj1 != null && obj1 instanceof Card && v1 instanceof HostGameView) {
+                    HostGameView gameView = (HostGameView) v1;
+                    Card card = (Card) obj1;
+                    gameView.addCard(card);
+                    gameView.repaint();
+                }
         }
     }
 

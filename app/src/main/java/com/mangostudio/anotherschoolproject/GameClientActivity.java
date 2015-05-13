@@ -1,10 +1,13 @@
 package com.mangostudio.anotherschoolproject;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.mangostudio.anotherschoolproject.frontend.ClientGameView;
 
 
 public class GameClientActivity extends ActionBarActivity {
@@ -17,6 +20,10 @@ public class GameClientActivity extends ActionBarActivity {
         CardGamesApplication.setCurrentActivity(this);
         setContentView(R.layout.activity_game_client);
         decorView = getWindow().getDecorView();
+        Intent intent = getIntent();
+        BluetoothPackage pkg = (BluetoothPackage) intent.getSerializableExtra("startPackage");
+        BluetoothDeviceRepresentation hostDev = (BluetoothDeviceRepresentation) pkg.additionalData.get("host");
+        ((ClientGameView)findViewById(R.id.game_view)).setHost(hostDev);
     }
 
     @Override

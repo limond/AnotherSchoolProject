@@ -36,7 +36,7 @@ public class CreateServerActivity extends ActionBarActivity {
         InterThreadCom.releaseAllSockets();
         setContentView(R.layout.activity_create_server);
         bluetooth = new BluetoothManagement();
-        netHandler = ((CardGamesApplication)getApplication()).getNetworkHandler();
+        netHandler = CardGamesApplication.getNetworkHandler();
         registerCreateServerListeners();
     }
 
@@ -152,6 +152,7 @@ public class CreateServerActivity extends ActionBarActivity {
         }
         if(id == R.id.action_start_game){
             Intent gameHostIntent = new Intent(this, GameHostActivity.class);
+            gameHostIntent.putExtra("connectedDevices", connectedDevices);
             startActivity(gameHostIntent);
         }
         return super.onOptionsItemSelected(item);
