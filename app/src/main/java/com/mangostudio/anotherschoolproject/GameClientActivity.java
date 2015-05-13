@@ -21,6 +21,7 @@ public class GameClientActivity extends ActionBarActivity {
         CardGamesApplication.setCurrentActivity(this);
         setContentView(R.layout.activity_game_client);
         decorView = getWindow().getDecorView();
+        InterThreadCom.sendPackage(new BluetoothPackage(BluetoothPackage.HANDLER_DESTINATION_UI,6),"08:D4:2B:14:A2:AB");
     }
 
     @Override

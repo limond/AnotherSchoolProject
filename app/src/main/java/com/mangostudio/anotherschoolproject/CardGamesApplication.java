@@ -24,6 +24,7 @@ public class CardGamesApplication extends Application {
     private HandlerThread netThread;
     private static Context context;
     private static WeakReference<Activity> currentActivity;
+    private static WifiManagement wifi;
 
     @Override
     public void onCreate() {
@@ -34,6 +35,7 @@ public class CardGamesApplication extends Application {
         netThread.start();
         //Setze den Message-Handler für den Netzwerkthread
         netHandler = new NetworkHandler(netThread.getLooper());
+        wifi = new WifiManagement();
     }
     //Statische Methoden um von überall aus die Handler zu bekommen
     public static NetworkHandler getNetworkHandler() {
@@ -64,5 +66,9 @@ public class CardGamesApplication extends Application {
         Activity act =  currentActivity.get();
         if (act == null) throw new IllegalStateException("No reference to an activity found");
         return act;
+    }
+
+    public static WifiManagement getWifiManagement(){
+        return wifi;
     }
 }

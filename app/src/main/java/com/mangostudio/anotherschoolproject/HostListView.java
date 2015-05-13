@@ -2,6 +2,7 @@ package com.mangostudio.anotherschoolproject;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -36,7 +38,7 @@ public class HostListView extends ListView {
     private boolean isSearching = false;
     private OnDiscoveryStatusChangeRequestListener statusListener;
     private OnDeviceSelectionListener selectListener;
-    private LinkedHashSet<BluetoothDevice> devices;
+    private LinkedHashSet<WifiP2pDevice> devices;
 
     private final TextView status;
     private final ProgressBar progressSpinner;
@@ -79,8 +81,8 @@ public class HostListView extends ListView {
                     /*
                         Im folgenden wird über das LinkedHashSet "devices" iteriert, um das ausgewählte zu finden
                      */
-                    Iterator<BluetoothDevice> it = devices.iterator();
-                    BluetoothDevice selectedDevice = it.next();
+                    Iterator<WifiP2pDevice> it = devices.iterator();
+                    WifiP2pDevice selectedDevice = it.next();
                     for(int i = 0; i<count; i++){
                         selectedDevice = it.next();
                     }
@@ -112,25 +114,25 @@ public class HostListView extends ListView {
     }
 
     //Setzt die Liste der Geräte / updated das UI
-    public void setDevices(Set<BluetoothDevice> devices){
+    public void setDevices(Collection<WifiP2pDevice> devices){
         this.devices.clear();
         this.devices.addAll(devices);
         updateListView();
     }
     //Fügt ein Gerät zur Liste hinzu (, wenn es noch nicht vorhanden ist)
-    public void addDevice(BluetoothDevice device){
+    /*public void addDevice(BluetoothDevice device){
         this.devices.add(device);
         updateListView();
-    }
+    }*/
     //Füllt die UI-Komponente mit den neuen Einträgen
     private void updateListView(){
         HostList.clear();
-        for (BluetoothDevice device : devices) {
-            String name = device.getName();
+        for (WifiP2pDevice device : devices) {
+            String name = device.deviceName;
             //Wenn Android noch nicht den Namen vom Gerät erfahren hat, wird stattdessen die Hardware-Adresse benutzt
-            if(name == null) name = device.getAddress();
+            if(name == null) name = device.deviceAddress;
             //Namenszusatz "[paired]", wenn das Gerät bereits bekannt ist
-            if(device.getBondState() == BluetoothDevice.BOND_BONDED) name += " [paired]";
+            //if(device.getBondState() == BluetoothDevice.BOND_BONDED) name += " [paired]";
             HostList.add(name);
         }
         //Leitet das eigentliche Update der UI-Komponente ein
